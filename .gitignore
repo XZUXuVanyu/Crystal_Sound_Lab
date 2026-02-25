@@ -1,0 +1,16 @@
+
+.vs/
+bin/
+temp/
+packages/
+
+imgui.ini
+
+*.user
+*.aps
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.lib
+*.dll
