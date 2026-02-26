@@ -5,7 +5,7 @@ module;
 #include <string>
 #include "glad/glad.h"
 #include <SDL.h>
-#include "imgui.h"
+#include "imgui/imgui.h"
 
 export module CrystalCore.Contexts;
 import CrystalCore.CoreUtils;

@@ -58,7 +58,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)includes;$(SolutionDir)includes\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)external;$(SolutionDir)external\includes;$(SolutionDir)external\includes_impl;$(SolutionDir)external\includes\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -74,7 +74,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)includes;$(SolutionDir)includes\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)external;$(SolutionDir)external\includes;$(SolutionDir)external\includes_impl;$(SolutionDir)external\includes\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -82,18 +82,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="includes_impl\glad.c" />
-    <ClCompile Include="includes_impl\imgui.cpp" />
-    <ClCompile Include="includes_impl\imgui_demo.cpp" />
-    <ClCompile Include="includes_impl\imgui_draw.cpp" />
-    <ClCompile Include="includes_impl\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="includes_impl\imgui_impl_sdl2.cpp" />
-    <ClCompile Include="includes_impl\imgui_tables.cpp" />
-    <ClCompile Include="includes_impl\imgui_widgets.cpp" />
+    <ClCompile Include="external\includes_impl\glad.c" />
+    <ClCompile Include="external\includes_impl\imgui.cpp" />
+    <ClCompile Include="external\includes_impl\imgui_draw.cpp" />
+    <ClCompile Include="external\includes_impl\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="external\includes_impl\imgui_impl_sdl2.cpp" />
+    <ClCompile Include="external\includes_impl\imgui_tables.cpp" />
+    <ClCompile Include="external\includes_impl\imgui_widgets.cpp" />
     <ClCompile Include="src\applications\GraphicManager.ixx" />
     <ClCompile Include="src\core\Contexts.ixx" />
     <ClCompile Include="src\core\CoreUtils.ixx" />
     <ClCompile Include="src\core\Event.ixx" />
+    <ClCompile Include="src\core\math\Complex.ixx" />
     <ClCompile Include="src\core\Shader.ixx" />
     <ClCompile Include="src\core\Buffer.ixx" />
     <ClCompile Include="src\modules\Oscillator.ixx" />
@@ -106,6 +106,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="external\includes\glad\glad.h" />
+    <ClInclude Include="external\includes\imgui\imconfig.h" />
+    <ClInclude Include="external\includes\imgui\imgui.h" />
+    <ClInclude Include="external\includes\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="external\includes\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="external\includes\imgui\imgui_impl_sdl2.h" />
+    <ClInclude Include="external\includes\imgui\imgui_internal.h" />
+    <ClInclude Include="external\includes\imgui\imstb_rectpack.h" />
+    <ClInclude Include="external\includes\imgui\imstb_textedit.h" />
+    <ClInclude Include="external\includes\imgui\imstb_truetype.h" />
+    <ClInclude Include="external\includes\KHR\khrplatform.h" />
     <ClInclude Include="includes\glad\glad.h" />
     <ClInclude Include="includes\imgui\imconfig.h" />
     <ClInclude Include="includes\imgui\imgui.h" />

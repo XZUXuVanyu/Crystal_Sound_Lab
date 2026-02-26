@@ -3,6 +3,7 @@
 bin/
 temp/
 packages/
+external/
 
 imgui.ini
 

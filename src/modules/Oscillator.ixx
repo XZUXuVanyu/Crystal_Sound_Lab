@@ -3,7 +3,7 @@
 #include <numbers>
 #include "glad/glad.h"
 #include <SDL.h>
-#include "imgui.h"
+#include "imgui/imgui.h"
 
 export module CrystalModules.Oscillator;
 import CrystalCore.Signal;
