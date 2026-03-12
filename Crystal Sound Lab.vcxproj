@@ -92,9 +92,12 @@
     <ClCompile Include="external\includes_impl\imgui_tables.cpp" />
     <ClCompile Include="external\includes_impl\imgui_widgets.cpp" />
     <ClCompile Include="external\includes_impl\miniaudio.c" />
-    <ClCompile Include="src\core\AudioNode.ixx" />
+    <ClCompile Include="src\core\nodes\Bus.ixx" />
+    <ClCompile Include="src\core\nodes\AudioNode.ixx" />
+    <ClCompile Include="src\core\nodes\Base.ixx" />
     <ClCompile Include="src\core\math\Complex.ixx" />
     <ClCompile Include="src\core\Foundation.ixx" />
+    <ClCompile Include="src\core\nodes\Source.ixx" />
     <ClCompile Include="src\services\AudioDriver.ixx" />
     <ClCompile Include="src\Source.cpp" />
   </ItemGroup>

@@ -51,7 +51,16 @@
     <ClCompile Include="src\core\Foundation.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\AudioNode.ixx">
+    <ClCompile Include="src\core\nodes\Base.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\nodes\Bus.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\nodes\AudioNode.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\nodes\Source.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

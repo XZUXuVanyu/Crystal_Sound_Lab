@@ -7,7 +7,9 @@ module;
 #include <optional>
 #include "miniaudio.h"
 export module Crystal_Service.AudioDriver;
+import Crystal_Log;
 import Crystal_Core.Foundation;
+import Crystal_Core.AudioNode;
 using namespace Crystal;
 
 export namespace Crystal::Service
@@ -21,7 +23,6 @@ export namespace Crystal::Service
 
 	State_Code Enum_Audio_Devices(Device_List& device_list)
 	{
-		ma_result result;
 		ma_context context;
 		if (ma_context_init(NULL, 0, NULL, &context) != MA_SUCCESS) {
 			std::cout << "Failed to initialize context" << std::endl;
@@ -32,7 +33,6 @@ export namespace Crystal::Service
 		ma_uint32 playbackDeviceCount;
 		ma_device_info* pCaptureDeviceInfos;
 		ma_uint32 captureDeviceCount;
-		ma_uint32 iDevice;
 
 		if (ma_context_get_devices(&context, &pPlaybackDeviceInfos, &playbackDeviceCount,
 			&pCaptureDeviceInfos, &captureDeviceCount) != MA_SUCCESS) {
@@ -97,16 +97,18 @@ export namespace Crystal::Service
 		State_Code Init(Audio_Descriptor& setting)
 		{
 			if (initialized.load() == true) {
+				Crystal_Debug_Log("check here");
 				return State_Code::Success;
 			}
-			
 			if (setting.sample_rate == 0) {
+				Crystal_Debug_Log("check here");
 				return State_Code::Invalid_Args;
 			}
 
 			current_setting = setting;
 
 			if (Check_If_Setting_Supported() != State_Code::Success) {
+				Crystal_Debug_Log("check here");
 				return State_Code::Not_Ready;
 			}
 
@@ -130,6 +132,7 @@ export namespace Crystal::Service
 			config.pUserData = this;
 
 			if (ma_device_init(NULL, &config, &device) != MA_SUCCESS) {
+				Crystal_Debug_Log("check here");
 				return State_Code::Device_Error;
 			}
 
@@ -140,10 +143,11 @@ export namespace Crystal::Service
 		{
 			State_Code result;
 			if ((result = Stop()) != State_Code::Success) {
+				Crystal_Debug_Log("check here");
 				return result;
 			}
-
 			if ((result = Uninit()) != State_Code::Success) {
+				Crystal_Debug_Log("check here");
 				return result;
 			}
 
@@ -152,6 +156,7 @@ export namespace Crystal::Service
 		State_Code Run()
 		{
 			if (ma_device_start(&device) != MA_SUCCESS) {
+				Crystal_Debug_Log("check here");
 				return State_Code::Fail;
 			}
 			return State_Code::Success;
@@ -159,6 +164,7 @@ export namespace Crystal::Service
 		State_Code Stop()
 		{
 			if (ma_device_stop(&device) != MA_SUCCESS) {
+				Crystal_Debug_Log("check here");
 				return State_Code::Device_Busy;
 			}
 			return State_Code::Success;
@@ -172,17 +178,32 @@ export namespace Crystal::Service
 			
 			return State_Code::Success;
 		}
-
+		 
+		State_Code Set_Bus(std::shared_ptr<Audio_Bus> bus)
+		{
+			master_bus = bus;
+			return State_Code::Success;
+		}
 		static void data_callback_func(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 		{
-			
+			Audio_Device* device = static_cast<Audio_Device*>(pDevice->pUserData);
+			if (!device or !device->master_bus or !pOutput) {
+				Crystal_Debug_Log("check here");
+				return;
+			}
+
+			//pOutput is held by device_buffer to get rid of extra memcpy cost
+			Audio_Buffer device_buffer{ .data = pOutput, .spec = device->current_setting, .frame_count = frameCount };
+			device->master_bus.get()->Process(device_buffer);
 		}
+
 		Device_Descriptor	device_property;
 		Audio_Descriptor	current_setting;
 
 	private:
 		std::atomic<bool> initialized = false;
 		ma_device device;
+		std::shared_ptr<Audio_Bus> master_bus;
 
 		State_Code Check_If_Setting_Supported()
 		{
@@ -209,6 +230,4 @@ export namespace Crystal::Service
 			return State_Code::Fail;
 		}
 	};
-
-
 }
