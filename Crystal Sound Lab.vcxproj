@@ -44,12 +44,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)bin\$(Platform)_$(Configuration)\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)temp\$(Platform)_$(Configuration)\$(ProjectName)</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)_$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)temp\$(Platform)_$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)bin\$(Platform)_$(Configuration)\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)temp\$(Platform)_$(Configuration)\$(ProjectName)</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)_$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)temp\$(Platform)_$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -59,6 +59,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)external;$(SolutionDir)external\includes;$(SolutionDir)external\includes_impl;$(SolutionDir)external\includes\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -75,6 +76,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)external;$(SolutionDir)external\includes;$(SolutionDir)external\includes_impl;$(SolutionDir)external\includes\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -89,20 +91,17 @@
     <ClCompile Include="external\includes_impl\imgui_impl_sdl2.cpp" />
     <ClCompile Include="external\includes_impl\imgui_tables.cpp" />
     <ClCompile Include="external\includes_impl\imgui_widgets.cpp" />
-    <ClCompile Include="src\applications\GraphicManager.ixx" />
-    <ClCompile Include="src\core\Contexts.ixx" />
-    <ClCompile Include="src\core\CoreUtils.ixx" />
-    <ClCompile Include="src\core\Event.ixx" />
+    <ClCompile Include="external\includes_impl\miniaudio.c" />
+    <ClCompile Include="src\core\AudioNode.ixx" />
     <ClCompile Include="src\core\math\Complex.ixx" />
-    <ClCompile Include="src\core\Shader.ixx" />
-    <ClCompile Include="src\core\Buffer.ixx" />
-    <ClCompile Include="src\modules\Oscillator.ixx" />
-    <ClCompile Include="src\modules\Oscilloscope.ixx" />
-    <ClCompile Include="src\services\FileControl.ixx" />
-    <ClCompile Include="src\services\UIEditor.ixx" />
+    <ClCompile Include="src\core\Foundation.ixx" />
+    <ClCompile Include="src\services\AudioDriver.ixx" />
     <ClCompile Include="src\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bin\x64_Debug\Crystal Sound Lab\Log_Settings.ini" />
+    <None Include="docs\learn.md" />
+    <None Include="docs\miniaudio_get_device_name.md" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -117,6 +116,7 @@
     <ClInclude Include="external\includes\imgui\imstb_textedit.h" />
     <ClInclude Include="external\includes\imgui\imstb_truetype.h" />
     <ClInclude Include="external\includes\KHR\khrplatform.h" />
+    <ClInclude Include="external\includes\miniaudio.h" />
     <ClInclude Include="includes\glad\glad.h" />
     <ClInclude Include="includes\imgui\imconfig.h" />
     <ClInclude Include="includes\imgui\imgui.h" />
@@ -128,6 +128,11 @@
     <ClInclude Include="includes\imgui\imstb_textedit.h" />
     <ClInclude Include="includes\imgui\imstb_truetype.h" />
     <ClInclude Include="includes\KHR\khrplatform.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Crystal_Log\Crystal_Log.vcxproj">
+      <Project>{19af3fef-73e4-4213-b3e8-f0aa5583d8dd}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
