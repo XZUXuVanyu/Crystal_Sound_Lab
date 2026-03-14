@@ -22,10 +22,7 @@ export namespace Crystal
 	export class Audio_Pipe : public Audio_Node
 	{
 	public:
-		void Set_Source(std::shared_ptr<Audio_Node> src) { source = src; }
-		void Add_Effect(std::shared_ptr<Audio_Effects> fx) { fx_chain.push_back(fx); }
-
-		void Process(Audio_Buffer& output) override 
+		void Process(Audio_Buffer& output) override
 		{
 			if (!source) return;
 			source->Process(output);
@@ -34,6 +31,8 @@ export namespace Crystal
 				fx->Process(output);
 			}
 		}
+		void Set_Source(std::shared_ptr<Audio_Node> src) { source = src; }
+		void Add_Effect(std::shared_ptr<Audio_Effects> fx) { fx_chain.push_back(fx); }
 
 	private:
 		std::shared_ptr<Audio_Node> source;

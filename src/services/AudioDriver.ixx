@@ -14,6 +14,7 @@ using namespace Crystal;
 
 export namespace Crystal::Service
 {
+	//Utility struct
 	struct Device_Descriptor
 	{
 		ma_device_info info;
@@ -21,6 +22,7 @@ export namespace Crystal::Service
 	};
 	using Device_List = std::vector<Device_Descriptor>;
 
+	//Utility func
 	State_Code Enum_Audio_Devices(Device_List& device_list)
 	{
 		ma_context context;
@@ -205,6 +207,7 @@ export namespace Crystal::Service
 		ma_device device;
 		std::shared_ptr<Audio_Bus> master_bus;
 
+		//Utility func to check if audio_spec from current audio_descriptor is supported by hardware
 		State_Code Check_If_Setting_Supported()
 		{
 			if (current_setting.sample_rate == 0) {

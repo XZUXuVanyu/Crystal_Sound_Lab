@@ -20,15 +20,15 @@ export namespace Crystal
 
 		Device_Error = 4,
 		Device_Busy = 5,
-	};
 
+		Path_Not_Exists = 6,
+	};
 	struct Audio_Descriptor 
 	{
 		u32			sample_rate = 0;
 		u8			channels;
 		ma_format	format;
 	};
-
 	struct Audio_Buffer
 	{
 		void* data;
@@ -36,7 +36,6 @@ export namespace Crystal
 		//How many sample points to pump/pull from Audio_Device upon next process
 		size_t frame_count;
 	};
-
 	size_t Frame_Count_To_Bytes(const Audio_Buffer& buf)
 	{
 		size_t format_to_bytes = 0;
