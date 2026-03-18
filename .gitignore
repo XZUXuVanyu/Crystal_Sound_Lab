@@ -5,7 +5,6 @@ packages/
 external/
 docs/
 Crystal_Logs/
-imgui.ini
 
 *.user
 *.aps

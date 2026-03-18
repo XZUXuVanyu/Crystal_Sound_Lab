@@ -1,0 +1,6 @@
+[submodule "external/Crystal_Log"]
+	path = external/Crystal_Log
+	url = https://github.com/XZUXuVanyu/Crystal_Log.git
+[submodule "external/JUCE"]
+	path = external/JUCE
+	url = https://github.com/juce-framework/JUCE.git

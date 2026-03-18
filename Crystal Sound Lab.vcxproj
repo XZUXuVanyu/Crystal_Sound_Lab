@@ -58,7 +58,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)external;$(SolutionDir)external\includes;$(SolutionDir)external\includes_impl;$(SolutionDir)external\includes\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
@@ -75,7 +75,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)external;$(SolutionDir)external\includes;$(SolutionDir)external\includes_impl;$(SolutionDir)external\includes\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
@@ -84,53 +84,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="external\includes_impl\glad.c" />
-    <ClCompile Include="external\includes_impl\imgui.cpp" />
-    <ClCompile Include="external\includes_impl\imgui_draw.cpp" />
-    <ClCompile Include="external\includes_impl\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="external\includes_impl\imgui_impl_sdl2.cpp" />
-    <ClCompile Include="external\includes_impl\imgui_tables.cpp" />
-    <ClCompile Include="external\includes_impl\imgui_widgets.cpp" />
-    <ClCompile Include="external\includes_impl\miniaudio.c" />
-    <ClCompile Include="src\core\nodes\Bus.ixx" />
-    <ClCompile Include="src\core\nodes\AudioNode.ixx" />
-    <ClCompile Include="src\core\nodes\Base.ixx" />
     <ClCompile Include="src\core\math\Complex.ixx" />
     <ClCompile Include="src\core\Foundation.ixx" />
-    <ClCompile Include="src\core\nodes\Source.ixx" />
-    <ClCompile Include="src\services\AudioDriver.ixx" />
+    <ClCompile Include="src\core\nodes\AudioNodes.ixx" />
     <ClCompile Include="src\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\x64_Debug\Crystal Sound Lab\Log_Settings.ini" />
     <None Include="docs\learn.md" />
     <None Include="docs\miniaudio_get_device_name.md" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="external\includes\glad\glad.h" />
-    <ClInclude Include="external\includes\imgui\imconfig.h" />
-    <ClInclude Include="external\includes\imgui\imgui.h" />
-    <ClInclude Include="external\includes\imgui\imgui_impl_opengl3.h" />
-    <ClInclude Include="external\includes\imgui\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="external\includes\imgui\imgui_impl_sdl2.h" />
-    <ClInclude Include="external\includes\imgui\imgui_internal.h" />
-    <ClInclude Include="external\includes\imgui\imstb_rectpack.h" />
-    <ClInclude Include="external\includes\imgui\imstb_textedit.h" />
-    <ClInclude Include="external\includes\imgui\imstb_truetype.h" />
-    <ClInclude Include="external\includes\KHR\khrplatform.h" />
-    <ClInclude Include="external\includes\miniaudio.h" />
-    <ClInclude Include="includes\glad\glad.h" />
-    <ClInclude Include="includes\imgui\imconfig.h" />
-    <ClInclude Include="includes\imgui\imgui.h" />
-    <ClInclude Include="includes\imgui\imgui_impl_opengl3.h" />
-    <ClInclude Include="includes\imgui\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="includes\imgui\imgui_impl_sdl2.h" />
-    <ClInclude Include="includes\imgui\imgui_internal.h" />
-    <ClInclude Include="includes\imgui\imstb_rectpack.h" />
-    <ClInclude Include="includes\imgui\imstb_textedit.h" />
-    <ClInclude Include="includes\imgui\imstb_truetype.h" />
-    <ClInclude Include="includes\KHR\khrplatform.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Crystal_Log\Crystal_Log.vcxproj">
@@ -138,17 +100,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="packages\sdl2.nuget.redist.2.32.8\build\native\sdl2.nuget.redist.targets" Condition="Exists('packages\sdl2.nuget.redist.2.32.8\build\native\sdl2.nuget.redist.targets')" />
-    <Import Project="packages\sdl2.nuget.2.32.8\build\native\sdl2.nuget.targets" Condition="Exists('packages\sdl2.nuget.2.32.8\build\native\sdl2.nuget.targets')" />
-    <Import Project="packages\glm.1.0.3\build\native\glm.targets" Condition="Exists('packages\glm.1.0.3\build\native\glm.targets')" />
-  </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\sdl2.nuget.redist.2.32.8\build\native\sdl2.nuget.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\sdl2.nuget.redist.2.32.8\build\native\sdl2.nuget.redist.targets'))" />
-    <Error Condition="!Exists('packages\sdl2.nuget.2.32.8\build\native\sdl2.nuget.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\sdl2.nuget.2.32.8\build\native\sdl2.nuget.targets'))" />
-    <Error Condition="!Exists('packages\glm.1.0.3\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glm.1.0.3\build\native\glm.targets'))" />
-  </Target>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

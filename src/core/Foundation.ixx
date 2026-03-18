@@ -1,6 +1,5 @@
 module;
 #include <cstdint>
-#include "miniaudio.h"
 export module Crystal_Core.Foundation;
 export namespace Crystal
 {
@@ -23,35 +22,4 @@ export namespace Crystal
 
 		Path_Not_Exists = 6,
 	};
-	struct Audio_Descriptor 
-	{
-		u32			sample_rate = 0;
-		u8			channels;
-		ma_format	format;
-	};
-	struct Audio_Buffer
-	{
-		void* data;
-		Audio_Descriptor spec;
-		//How many sample points to pump/pull from Audio_Device upon next process
-		size_t frame_count;
-	};
-	size_t Frame_Count_To_Bytes(const Audio_Buffer& buf)
-	{
-		size_t format_to_bytes = 0;
-		switch (buf.spec.format)
-		{
-		case ma_format::ma_format_f32:
-			format_to_bytes = sizeof(f32);
-			break;
-
-		case ma_format::ma_format_s16:
-			format_to_bytes = sizeof(int16_t);
-			break;
-		default:
-			//Clog
-			break;
-		}
-		return buf.frame_count * buf.spec.channels * format_to_bytes;
-	}
 }
