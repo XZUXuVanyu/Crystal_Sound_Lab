@@ -1,7 +1,0 @@
-<Solution>
-  <Configurations>
-    <Platform Name="x64" />
-  </Configurations>
-  <Project Path="../Crystal_Log/Crystal_Log.vcxproj" Id="19af3fef-73e4-4213-b3e8-f0aa5583d8dd" />
-  <Project Path="Crystal Sound Lab.vcxproj" Id="4c794f12-14c9-444c-ac86-3663d4a89594" />
-</Solution>

@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ResolveNugetPackages>false</ResolveNugetPackages>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Custom|x64">
+      <Configuration>Custom</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2819EDF1-D144-3780-9BCC-2D8A767F2DD0}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Custom|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Custom|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Custom|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\external\JUCE\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Custom|x64'">Building Custom Rule F:/Project Files/Visual Studio Projects/Crystal_Sound_Lab/external/JUCE/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Custom|x64'">setlocal
+E:\cmake-4.3.0-windows-x86_64\bin\cmake.exe "-SF:/Project Files/Visual Studio Projects/Crystal_Sound_Lab/external/JUCE" "-BF:/Project Files/Visual Studio Projects/Crystal_Sound_Lab/build/external/JUCE/tools" --check-stamp-file "F:/Project Files/Visual Studio Projects/Crystal_Sound_Lab/build/external/JUCE/tools/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Custom|x64'">E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\BasicConfigVersion-ExactVersion.cmake.in;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\CMakeCInformation.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\CMakeCXXInformation.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\CMakeCommonLanguageInclude.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\CMakeDependentOption.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\CMakeGenericSystem.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\CMakeInitializeConfigs.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\CMakeLanguageInformation.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\CMakePackageConfigHelpers.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\CMakeRCInformation.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\CMakeSystemSpecificInformation.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\CMakeSystemSpecificInitialize.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Compiler\CMakeCommonCompilerMacros.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Compiler\MSVC-C.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Compiler\MSVC-CXX.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Compiler\MSVC.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Internal\CMakeCLinkerInformation.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Internal\CMakeCXXLinkerInformation.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Internal\CMakeCommonLinkerInformation.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Linker\MSVC-C.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Linker\MSVC-CXX.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Linker\MSVC.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC-C.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Platform\Linker\Windows-MSVC.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Platform\Windows-Initialize.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Platform\Windows-MSVC-C.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Platform\Windows-MSVC-CXX.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Platform\Windows-MSVC.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Platform\Windows.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\Platform\WindowsPaths.cmake;E:\cmake-4.3.0-windows-x86_64\share\cmake-4.3\Modules\WriteBasicConfigVersionFile.cmake;F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\build\external\JUCE\tools\CMakeFiles\4.3.0\CMakeCCompiler.cmake;F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\build\external\JUCE\tools\CMakeFiles\4.3.0\CMakeCXXCompiler.cmake;F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\build\external\JUCE\tools\CMakeFiles\4.3.0\CMakeRCCompiler.cmake;F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\build\external\JUCE\tools\CMakeFiles\4.3.0\CMakeSystem.cmake;F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\build\external\JUCE\tools\CMakeFiles\cmake.verify_globs;F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\external\JUCE\extras\Build\CMake\JUCECheckAtomic.cmake;F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\external\JUCE\extras\Build\CMake\JUCEConfig.cmake.in;F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\external\JUCE\extras\Build\CMake\JUCEHelperTargets.cmake;F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\external\JUCE\extras\Build\CMake\JUCEModuleSupport.cmake;F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\external\JUCE\extras\Build\CMake\JUCEUtils.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Custom|x64'">F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\build\external\JUCE\tools\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Custom|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\build\external\JUCE\tools\ZERO_CHECK.vcxproj">
+      <Project>{4839FA56-B720-339B-B096-369FA047087F}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="F:\Project Files\Visual Studio Projects\Crystal_Sound_Lab\build\external\JUCE\tools\extras\Build\juceaide\juceaide.vcxproj">
+      <Project>{D5E4C10D-1413-3DE6-AE21-8D656E31137A}</Project>
+      <Name>juceaide</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

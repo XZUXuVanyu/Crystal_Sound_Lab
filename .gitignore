@@ -1,17 +1,21 @@
-.vs/
+# builds
+build/
 bin/
 temp/
-packages/
-external/
-docs/
-Crystal_Logs/
+out/
 
+# IDE
+.vs/
 *.user
-*.aps
-*.obj
-*.exe
-*.pdb
-*.ilk
-*.lib
-*.dll
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+*.db
+*.opendb
+
+# Logs
 *.log
+*.cache
+*.tmp

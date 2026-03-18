@@ -1,0 +1,10 @@
+^F:\PROJECT FILES\VISUAL STUDIO PROJECTS\CRYSTAL_SOUND_LAB\BUILD\EXTERNAL\JUCE\TOOLS\CMAKEFILES\991DBA339979034162BA60223FCD2113\GENERATE.STAMP.RULE
+setlocal
+E:\cmake-4.3.0-windows-x86_64\bin\cmake.exe "-SF:/Project Files/Visual Studio Projects/Crystal_Sound_Lab/external/JUCE" "-BF:/Project Files/Visual Studio Projects/Crystal_Sound_Lab/build/external/JUCE/tools" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "F:/Project Files/Visual Studio Projects/Crystal_Sound_Lab/build/external/JUCE/tools/JUCE.slnx"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
