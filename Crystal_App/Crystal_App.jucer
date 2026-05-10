@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="BsrEf8" name="Crystal_App" projectType="guiapp" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="latest"
+              headerPath="$(SolutionDir)..\Crystal_Engine\Source&#10;$(SolutionDir)..\Crystal_Engine\Vendor&#10;$(SolutionDir)..\Crystal_Engine\Vendor\glm.1.0.3\build\native\include&#10;&#10;">
+  <MAINGROUP id="Z39O2b" name="Crystal_App">
+    <GROUP id="{02A50431-4A40-63BD-E017-060F506B23FF}" name="Source">
+      <FILE id="jygd1V" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <GROUP id="{8220301B-4461-099A-7DE0-16A932E7A59D}" name="JUCESpecialised">
+        <FILE id="BQzGBN" name="JUCE_Entry.cpp" compile="1" resource="0" file="Source/JUCESpecialised/JUCE_Entry.cpp"/>
+        <FILE id="S2neGb" name="JUCE_Entry.h" compile="0" resource="0" file="Source/JUCESpecialised/JUCE_Entry.h"/>
+        <FILE id="feqkoD" name="JUCE_MainComponent.h" compile="0" resource="0"
+              file="Source/JUCESpecialised/JUCE_MainComponent.h"/>
+      </GROUP>
+    </GROUP>
+  </MAINGROUP>
+  <MODULES>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+  <EXPORTFORMATS>
+    <VS2026 targetFolder="F:\Project Files\Visual Studio Projects\Crystal\Crystal_App\"
+            externalLibraries="Crystal_Engine.lib">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Crystal_App" binaryPath="$(SolutionDir)bin"
+                       headerPath="$(SolutionDir)..\Crystal_Engine\Source&#10;$(SolutionDir)..\Crystal_Engine\Vendor&#10;"
+                       libraryPath="$(SolutionDir)..\Crystal_Engine\bin\$(Platform)_$(Configuration)\Crystal_Engine"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Crystal_App" binaryPath="$(SolutionDir)bin"
+                       headerPath="$(SolutionDir)..\Crystal_Engine\Source&#10;$(SolutionDir)..\Crystal_Engine\Vendor"
+                       libraryPath="$(SolutionDir)..\Crystal_Engine\bin\$(Platform)_$(Configuration)\Crystal_Engine"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="D:/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="D:/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="D:/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="D:/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="D:/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="D:/JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="D:/JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2026>
+  </EXPORTFORMATS>
+</JUCERPROJECT>
