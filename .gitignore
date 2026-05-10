@@ -1,21 +1,15 @@
-# builds
-build/
-bin/
-temp/
-out/
+**/.vs/
+**/bin/
+**/bintemp/
+**/x64/
+**/Debug/
+**/Release/
+**/Vendor/
 
-# IDE
-.vs/
-*.user
-*.sln
-*.vcxproj
-*.vcxproj.filters
+/Crystal_App/JuceLibraryCode/
+
+
 *.vcxproj.user
-*.suo
-*.db
-*.opendb
 
-# Logs
 *.log
-*.cache
 *.tmp
