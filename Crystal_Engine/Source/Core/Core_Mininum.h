@@ -6,6 +6,7 @@
 #include <memory>
 #include <iostream>
 #include "Event.h"
+#include "Layer.h"
 //==============================================================================
 namespace Crystal::Core
 {
@@ -31,20 +32,30 @@ namespace Crystal::Core
 
             std::cout << "[Engine] Engine initialised" << std::endl;
         }
-        virtual void onEvent(EventBase& e) 
-    	{
-            EventDispatcher dispatcher{ e };
-            dispatcher.dispatch<WindowClose>(CRST_BIND_EVENT_CALLBACK(onWindowClose));
-            dispatcher.dispatch<MouseMoved>(CRST_BIND_EVENT_CALLBACK(onMouseMoved));
-            dispatcher.dispatch<MouseButtonPressed>(CRST_BIND_EVENT_CALLBACK(onMouseButtonPressed));
-        }
         void quit();
         //==============================================================================
+        virtual void onEvent(EventBase& e)
+        {
+            EventDispatcher dispatcher{ e };
+            dispatcher.dispatch<WindowClose>(CRST_BIND_EVENT_CALLBACK(onWindowClose));
+            if (e.handled) return;
+            for (auto layer_iter = layers.rbegin(); layer_iter != layers.rend(); ++layer_iter)
+            {
+                if (e.handled) break;
+                (*layer_iter)->onEvent(e);
+            }
+        }
+        template<isCRSTLayer Layer_T>
+        void pushLayer(std::unique_ptr<Layer_T> layer)
+        {
+            layers.emplace_back(std::move(layer));
+        }
+        //==============================================================================
         virtual CRSTbool onWindowClose(WindowClose& e) = 0;
-        virtual CRSTbool onMouseMoved(MouseMoved& e) = 0;
-        virtual CRSTbool onMouseButtonPressed(MouseButtonPressed& e) = 0;
+        //==============================================================================
     protected:
         std::unique_ptr<WindowBase> window;
+        std::vector<std::unique_ptr<LayerBase>> layers;
     };
-    ApplicationBase* createApplication();
+    std::unique_ptr<ApplicationBase> createApplication();
 }

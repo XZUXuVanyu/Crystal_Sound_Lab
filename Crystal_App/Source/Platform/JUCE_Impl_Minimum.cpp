@@ -124,18 +124,18 @@ namespace Crystal::Core
 		return std::make_unique<Platform::CRSTWindow>();
 	}
 }
-
 class JUCE_Entry : public juce::JUCEApplication
 {
 public:
+	//==============================================================================
 	const juce::String getApplicationName() override { return "Crystal"; }
 	const juce::String getApplicationVersion() override { return "1.0"; }
-
+	//==============================================================================
 	void initialise(const juce::String& commandLine) override
 	{
 		redirector = std::make_unique<Crystal::Platform::OutputRedirector>();
 
-		main_app.reset(Crystal::Core::createApplication());
+		main_app = Crystal::Core::createApplication();
 		main_app->initialise();
 	}
 	void shutdown() override
@@ -145,8 +145,11 @@ public:
 		std::cout << "[Platform] Done" << std::endl;
 		redirector.reset();
 	}
+	//==============================================================================
 private:
+	//==============================================================================
 	std::unique_ptr<Crystal::Core::ApplicationBase> main_app;
 	std::unique_ptr<Crystal::Platform::OutputRedirector> redirector;
+	//==============================================================================
 };
 START_JUCE_APPLICATION(JUCE_Entry)

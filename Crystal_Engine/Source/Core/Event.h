@@ -6,6 +6,9 @@ namespace Crystal::Core
 {
     struct EventBase
     {
+        //==============================================================================
+        using is_event = void;
+        //==============================================================================
         CRSTbool handled = false;
         virtual EventType getType() const { return EventType::None; }
         EventBase() = default;
@@ -14,7 +17,6 @@ namespace Crystal::Core
     template<EventType EventType_T>
     struct Event : EventBase
     {
-        using is_event = void;
         static EventType getStaticType() { return EventType_T; }
         EventType getType() const override { return getStaticType(); }
     };
@@ -40,8 +42,8 @@ namespace Crystal::Core
     public:
         EventDispatcher(EventBase& e) : event(e) {}
 
-        template<isCRSTEvent EventT, isCRSTEventCallback<EventT> CallbackT>
-        CRSTbool dispatch(const CallbackT& func)
+        template<isCRSTEvent EventT, isCRSTEventCallback<EventT> Callback_T>
+        CRSTbool dispatch(const Callback_T& func)
         {
             if (event.getType() == EventT::getStaticType())
             {

@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\Event.h" />
+    <ClInclude Include="Source\Core\Layer.h" />
     <ClInclude Include="Source\Core\TypeAndConcepts.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

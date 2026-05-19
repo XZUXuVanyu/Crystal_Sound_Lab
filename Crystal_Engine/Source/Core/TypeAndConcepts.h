@@ -50,6 +50,7 @@ namespace Crystal::Core
 namespace Crystal::Core
 {
 	class EventBase;
+	class LayerBase;
 	template <typename T>
 	concept isCRSTEvent = requires
 	{
@@ -63,6 +64,13 @@ namespace Crystal::Core
 		requires isCRSTEvent<EventT>;
 		requires std::invocable<T, EventT&>;
 		requires std::convertible_to<std::invoke_result_t<T, EventT&>, CRSTbool>;
+	};
+
+	template <typename T>
+	concept isCRSTLayer = requires
+	{
+		typename T::is_layer;
+		requires std::derived_from<T, LayerBase>;
 	};
 }
 //==============================================================================
