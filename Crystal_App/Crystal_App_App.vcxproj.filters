@@ -2,8 +2,11 @@
 
 <Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Crystal_App\Source\JUCESpecialised">
-      <UniqueIdentifier>{DD778BB2-7BB1-9C12-4555-4A20B0D115F5}</UniqueIdentifier>
+    <Filter Include="Crystal_App\Source\App">
+      <UniqueIdentifier>{C49A5FE4-56E0-F6B2-63FA-D90F3C870C39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Crystal_App\Source\Platform">
+      <UniqueIdentifier>{D0E2BC34-4A23-0C23-5FC8-81B788DF2B3F}</UniqueIdentifier>
     </Filter>
     <Filter Include="Crystal_App\Source">
       <UniqueIdentifier>{BA75A430-89F1-DDD2-B86C-73153A08FB43}</UniqueIdentifier>
@@ -328,11 +331,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Main.cpp">
-      <Filter>Crystal_App\Source</Filter>
+    <ClCompile Include="Source\App\SandBox.cpp">
+      <Filter>Crystal_App\Source\App</Filter>
     </ClCompile>
-    <ClCompile Include="Source\JUCESpecialised\JUCE_Entry.cpp">
-      <Filter>Crystal_App\Source\JUCESpecialised</Filter>
+    <ClCompile Include="Source\Platform\JUCE_Impl_Minimum.cpp">
+      <Filter>Crystal_App\Source\Platform</Filter>
     </ClCompile>
     <ClCompile Include="D:\JUCE\modules\juce_core\containers\juce_AbstractFifo.cpp">
       <Filter>JUCE Modules\juce_core\containers</Filter>
@@ -2208,12 +2211,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\JUCESpecialised\JUCE_Entry.h">
-      <Filter>Crystal_App\Source\JUCESpecialised</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\JUCESpecialised\JUCE_MainComponent.h">
-      <Filter>Crystal_App\Source\JUCESpecialised</Filter>
-    </ClInclude>
     <ClInclude Include="D:\JUCE\modules\juce_core\containers\juce_AbstractFifo.h">
       <Filter>JUCE Modules\juce_core\containers</Filter>
     </ClInclude>

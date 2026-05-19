@@ -1,6 +1,5 @@
 ﻿//==============================================================================
 #pragma once
-#include <glm/glm.hpp>
 //==============================================================================
 namespace Crystal
 {
@@ -19,15 +18,59 @@ namespace Crystal
 	using CRSTf32 = float;
 	using CRSTf64 = double;
 }
-
 namespace Crystal::Core
 {
-	template <typename To_be_Checked, typename Base>
-	concept CRSTisDerivedFrom = std::is_base_of_v<Base, To_be_Checked>;
-
-	template <typename To_be_Checked, typename Derived>
-	concept CRSTisBaseOf = std::is_base_of_v<Derived, To_be_Checked>;
-
-	
+	class EventBase;
+	using EventCallbackFn = std::function<void(Core::EventBase&)>;
 }
+namespace Crystal::Core
+{
+	struct ApplicationContext
+	{
+		std::string_view name = "Crystal App";
+		std::string_view version = "0.0.1";
+		bool with_window = true;
+	};
 
+	struct WindowContext
+	{
+		std::string_view title = "Crystal Engine";
+		CRSTu32 width = 1280;
+		CRSTu32 height = 720;
+	};
+
+	enum class EventType : CRSTu8
+	{
+		None = 0,
+		WindowClose, WindowResize,
+		KeyPressed, KeyReleased,
+		MouseMoved, MouseButtonPressed,
+		TimeAdvanced
+	};
+
+	enum class MouseButtonCode : CRSTu8
+	{
+		None = 0,
+		Left, Right, Middle, Side1, Side2
+	};
+
+}
+namespace Crystal::Core
+{
+	class EventBase;
+
+	template <typename T>
+	concept isCRSTEvent = requires
+	{
+		typename T::is_event;
+		requires std::derived_from<T, EventBase>;
+	};
+
+	template <typename T, isCRSTEvent EventT>
+	concept isCRSTEventCallback = requires
+	{
+		requires std::invocable<T, EventT&>;
+		requires std::convertible_to<std::invoke_result_t<T, EventT&>, CRSTbool>;
+	};
+}
+//==============================================================================

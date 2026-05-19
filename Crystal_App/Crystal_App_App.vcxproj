@@ -158,8 +158,8 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Main.cpp"/>
-    <ClCompile Include="Source\JUCESpecialised\JUCE_Entry.cpp"/>
+    <ClCompile Include="Source\App\SandBox.cpp"/>
+    <ClCompile Include="Source\Platform\JUCE_Impl_Minimum.cpp"/>
     <ClCompile Include="D:\JUCE\modules\juce_core\containers\juce_AbstractFifo.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -1909,8 +1909,6 @@
     <ClCompile Include="JuceLibraryCode\include_juce_opengl.cpp"/>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\JUCESpecialised\JUCE_Entry.h"/>
-    <ClInclude Include="Source\JUCESpecialised\JUCE_MainComponent.h"/>
     <ClInclude Include="D:\JUCE\modules\juce_core\containers\juce_AbstractFifo.h"/>
     <ClInclude Include="D:\JUCE\modules\juce_core\containers\juce_Array.h"/>
     <ClInclude Include="D:\JUCE\modules\juce_core\containers\juce_ArrayAllocationBase.h"/>

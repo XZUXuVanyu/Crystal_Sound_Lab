@@ -89,18 +89,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Core\Application.h" />
-    <ClInclude Include="Source\Core\Layer.h" />
-    <ClInclude Include="Source\Core\TypeAndConcepts.h" />
-    <ClInclude Include="Source\Math\Quaternion.h" />
-    <ClInclude Include="Source\Core\Utilities.h" />
-    <ClInclude Include="Source\Core\Window.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Source\Core\Application.cpp" />
-    <ClCompile Include="Source\Core\Layer.cpp" />
-    <ClCompile Include="Source\Core\Window.cpp" />
-    <ClCompile Include="Source\Math\Quaternion.cpp" />
+    <ClCompile Include="Source\Core\Core_Mininum.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

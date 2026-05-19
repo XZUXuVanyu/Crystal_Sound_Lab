@@ -8,8 +8,7 @@
 
 /Crystal_App/JuceLibraryCode/
 
-
-*.vcxproj.user
+*.user
 
 *.log
 *.tmp

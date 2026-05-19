@@ -5,12 +5,12 @@
               headerPath="$(SolutionDir)..\Crystal_Engine\Source&#10;$(SolutionDir)..\Crystal_Engine\Vendor&#10;$(SolutionDir)..\Crystal_Engine\Vendor\glm.1.0.3\build\native\include&#10;&#10;">
   <MAINGROUP id="Z39O2b" name="Crystal_App">
     <GROUP id="{02A50431-4A40-63BD-E017-060F506B23FF}" name="Source">
-      <FILE id="jygd1V" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
-      <GROUP id="{8220301B-4461-099A-7DE0-16A932E7A59D}" name="JUCESpecialised">
-        <FILE id="BQzGBN" name="JUCE_Entry.cpp" compile="1" resource="0" file="Source/JUCESpecialised/JUCE_Entry.cpp"/>
-        <FILE id="S2neGb" name="JUCE_Entry.h" compile="0" resource="0" file="Source/JUCESpecialised/JUCE_Entry.h"/>
-        <FILE id="feqkoD" name="JUCE_MainComponent.h" compile="0" resource="0"
-              file="Source/JUCESpecialised/JUCE_MainComponent.h"/>
+      <GROUP id="{DA32E66D-99AE-1DD6-CB86-BC9D14E6EF57}" name="App">
+        <FILE id="wXFgMb" name="SandBox.cpp" compile="1" resource="0" file="Source/App/SandBox.cpp"/>
+      </GROUP>
+      <GROUP id="{77375741-0115-3F9B-E356-A90F2460D322}" name="Platform">
+        <FILE id="HGftQZ" name="JUCE_Impl_Minimum.cpp" compile="1" resource="0"
+              file="Source/Platform/JUCE_Impl_Minimum.cpp"/>
       </GROUP>
     </GROUP>
   </MAINGROUP>
