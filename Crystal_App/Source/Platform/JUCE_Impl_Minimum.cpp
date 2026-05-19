@@ -4,6 +4,7 @@
 #include <streambuf>
 #include <string>
 #include "Core/Core_Mininum.h"
+#include "Core/Event.h"
 //==============================================================================
 namespace Crystal::Platform
 {
@@ -67,13 +68,25 @@ namespace Crystal::Platform
 	{
 	public:
 		std::function<void(Core::EventBase&)> send_event;
-		void mouseDown(const juce::MouseEvent& e) override
+		void mouseDown(const juce::MouseEvent& event) override
 		{
-			Core::MouseClickEvent engine_event(e.position.x, e.position.y);
+			Core::MouseButtonCode button = Core::MouseButtonCode::None;
+			if (event.mods.isLeftButtonDown()) button = Core::MouseButtonCode::Left;
+			if (event.mods.isRightButtonDown()) button = Core::MouseButtonCode::Right;
+			if (event.mods.isMiddleButtonDown()) button = Core::MouseButtonCode::Middle;
+
+			Core::MouseButtonPressed engine_event(button);
 			if (send_event) send_event(engine_event);
 		}
+		void mouseMove(const juce::MouseEvent& event) override
+		{
+			CRSTf32 x, y;
+			x = static_cast<CRSTf32>(event.x) / static_cast<CRSTf32>(getWidth());
+			y = static_cast<CRSTf32>(event.y) / static_cast<CRSTf32>(getHeight());
 
-
+			Core::MouseMoved engine_event(x, y);
+			if (send_event) send_event(engine_event);
+		}
 	};
 	class CRSTWindow : public Core::WindowBase, public juce::DocumentWindow
 	{
@@ -85,19 +98,18 @@ namespace Crystal::Platform
 			centreWithSize(800, 600);
 			setVisible(true);
 		}
-
-		void routeEvent(const Core::EventCallbackFn& callback) override 
+		void routeEvent(const std::function<void(Core::EventBase&)>& callback) override
 		{
 			main_comp->send_event = callback;
 		}
-
 		void closeButtonPressed() override
 		{
-			Core::AppShouldQuitEvent quit_event;
+			std::cout << "[Platform] Requesting quit..." << std::endl;
+			Core::WindowClose quit_event;
 			if (main_comp->send_event) main_comp->send_event(quit_event);
 			if (quit_event.handled)
 			{
-				std::cout << "[Platform] Engine has quited." << std::endl;
+				std::cout << "[Platform] Engine has quited" << std::endl;
 				juce::JUCEApplication::getInstance()->systemRequestedQuit();
 			}
 		}
@@ -128,7 +140,10 @@ public:
 	}
 	void shutdown() override
 	{
-		
+		std::cout << "[Platform] Cleaning up..." << std::endl;
+		main_app.reset();
+		std::cout << "[Platform] Done" << std::endl;
+		redirector.reset();
 	}
 private:
 	std::unique_ptr<Crystal::Core::ApplicationBase> main_app;

@@ -91,6 +91,10 @@
   <ItemGroup>
     <ClCompile Include="Source\Core\Core_Mininum.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Core\Event.h" />
+    <ClInclude Include="Source\Core\TypeAndConcepts.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="Vendor\glm.1.0.3\build\native\glm.targets" Condition="Exists('Vendor\glm.1.0.3\build\native\glm.targets')" />

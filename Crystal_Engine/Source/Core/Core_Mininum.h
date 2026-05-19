@@ -5,37 +5,25 @@
 #include <functional>
 #include <memory>
 #include <iostream>
+#include "Event.h"
+//==============================================================================
 namespace Crystal::Core
 {
-    class EventBase
-	{
-    public:
-        bool handled = false;
-        virtual ~EventBase() = default;
-    };
-    struct MouseClickEvent : public EventBase
-	{
-        float x, y;
-        MouseClickEvent(float x, float y) : x(x), y(y) {}
-    };
-    struct AppShouldQuitEvent : EventBase
-    {
-        AppShouldQuitEvent() {}
-    };
-
-    using EventCallbackFn = std::function<void(EventBase&)>;
     class WindowBase
 	{
     public:
+        //==============================================================================
         virtual ~WindowBase() = default;
-        virtual void routeEvent(const EventCallbackFn& callback) = 0;
-
+        virtual void routeEvent(const std::function<void(EventBase&)>& callback) = 0;
+        //==============================================================================
         static std::unique_ptr<WindowBase> createWindow();
     };
     class ApplicationBase
 	{
     public:
+        //==============================================================================
         virtual ~ApplicationBase() = default;
+        //==============================================================================
         virtual void initialise()
     	{
             window = WindowBase::createWindow();
@@ -45,18 +33,16 @@ namespace Crystal::Core
         }
         virtual void onEvent(EventBase& e) 
     	{
-            if (auto* quit_event = dynamic_cast<AppShouldQuitEvent*>(&e))
-            {
-                std::cout << "[Core] Engine requested quit..." << std::endl ;
-                quit_event->handled = true;
-            }
-            if (auto* mouse_event = dynamic_cast<MouseClickEvent*>(&e)) 
-            {
-                std::cout << "[Core] Mouse Click: X="
-                    << mouse_event->x << " Y=" << mouse_event->y << std::endl;
-            }
+            EventDispatcher dispatcher{ e };
+            dispatcher.dispatch<WindowClose>(CRST_BIND_EVENT_CALLBACK(onWindowClose));
+            dispatcher.dispatch<MouseMoved>(CRST_BIND_EVENT_CALLBACK(onMouseMoved));
+            dispatcher.dispatch<MouseButtonPressed>(CRST_BIND_EVENT_CALLBACK(onMouseButtonPressed));
         }
         void quit();
+        //==============================================================================
+        virtual CRSTbool onWindowClose(WindowClose& e) = 0;
+        virtual CRSTbool onMouseMoved(MouseMoved& e) = 0;
+        virtual CRSTbool onMouseButtonPressed(MouseButtonPressed& e) = 0;
     protected:
         std::unique_ptr<WindowBase> window;
     };

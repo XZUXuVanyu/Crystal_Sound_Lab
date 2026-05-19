@@ -13,17 +13,28 @@ public:
     void onEvent(Crystal::Core::EventBase& e) override 
 	{
         ApplicationBase::onEvent(e);
-        if (auto* mouse_event = dynamic_cast<Crystal::Core::MouseClickEvent*>(&e))
-        {
-            std::cout << "[Sandbox] Mouse click" << std::endl;
-            e.handled = true;
-        }
+    }
+
+    Crystal::CRSTbool onWindowClose(Crystal::Core::WindowClose& e) override
+    {
+        e.handled = true;
+        std::cout << "[Sandbox] onWindowClose event handled" << std::endl;
+        return true;
+    }
+    Crystal::CRSTbool onMouseMoved(Crystal::Core::MouseMoved& e) override
+    {
+        e.handled = true;
+        return true;
+    }
+    Crystal::CRSTbool onMouseButtonPressed(Crystal::Core::MouseButtonPressed& e) override
+    {
+        e.handled = true;
+        std::cout << "[Sandbox] onMouseButtonPressed: Button = " << 
+            static_cast<int>(e.button) << std::endl;
+        return true;
     }
 };
-//==============================================================================
-// 履行引擎的入口点契约 (Fulfilling the Entry Point Contract)
-// 链接器 (Linker) 会在最后把这个函数和 JUCE 平台层缝合在一起。
-//==============================================================================
+
 Crystal::Core::ApplicationBase* Crystal::Core::createApplication()
 {
     return new MyMathSandbox();
