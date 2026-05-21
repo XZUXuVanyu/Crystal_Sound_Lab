@@ -1,13 +1,18 @@
 //==============================================================================
+#include <chrono>
 #include <iostream>
 #include <JuceHeader.h>
 #include <streambuf>
 #include <string>
-#include "Core/Core_Mininum.h"
+#include "Core/Application.h"
 #include "Core/Event.h"
+#include "Core/Timer.h"
+#include "Core/Window.h"
 //==============================================================================
 namespace Crystal::Platform
 {
+	class CRST_Window;
+
 	class OutputStreamBuf : public std::streambuf
 	{
 	protected:
@@ -63,11 +68,13 @@ namespace Crystal::Platform
 		OutputStreamBuf juce_buf;
 		std::streambuf* original_buf = nullptr;
 	};
-
-	class JUCE_MainComponent : public juce::Component
+}
+namespace Crystal::Platform
+{
+	class JUCE_Functionality : public juce::Component
 	{
 	public:
-		std::function<void(Core::EventBase&)> send_event;
+		std::function<void(Core::EventBase&)> comp_dispatch_event_callback = nullptr;
 		void mouseDown(const juce::MouseEvent& event) override
 		{
 			Core::MouseButtonCode button = Core::MouseButtonCode::None;
@@ -76,7 +83,7 @@ namespace Crystal::Platform
 			if (event.mods.isMiddleButtonDown()) button = Core::MouseButtonCode::Middle;
 
 			Core::MouseButtonPressed engine_event(button);
-			if (send_event) send_event(engine_event);
+			if (comp_dispatch_event_callback) comp_dispatch_event_callback(engine_event);
 		}
 		void mouseMove(const juce::MouseEvent& event) override
 		{
@@ -85,28 +92,75 @@ namespace Crystal::Platform
 			y = static_cast<CRSTf32>(event.y) / static_cast<CRSTf32>(getHeight());
 
 			Core::MouseMoved engine_event(x, y);
-			if (send_event) send_event(engine_event);
+			if (comp_dispatch_event_callback) comp_dispatch_event_callback(engine_event);
 		}
 	};
-	class CRSTWindow : public Core::WindowBase, public juce::DocumentWindow
+}
+namespace Crystal::Platform
+{
+	class CRST_Timer : public juce::Timer, public Core::FixedTimeStepBase
 	{
 	public:
-		CRSTWindow() : DocumentWindow("JUCE Window", juce::Colours::black, allButtons)
+		CRST_Timer(CRSTf64 time_step) : FixedTimeStepBase(time_step)
 		{
-			main_comp = new JUCE_MainComponent();
-			setContentOwned(main_comp, true);
+
+		}
+		void timerCallback() override
+		{
+			auto now = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<CRSTf64> elapsed = now - last_hardware_time;
+			last_hardware_time = now;
+
+			FixedTimeStepBase::onTimeAdvance(elapsed.count());
+			// notify_time_advance_callback(time_step) -> ApplicationBase::onTimeAdvance(time_step)
+		}
+		void start(const std::function<void(CRSTf64)>& callback) override
+		{
+			// ApplicationBase::onTimeAdvance -> notify_time_advance_callback
+			notify_time_advance_callback = callback;
+			last_hardware_time = std::chrono::high_resolution_clock::now();
+
+			int interval_ms = static_cast<int>(time_step * 1000.0);
+			if (interval_ms < 1) interval_ms = 1;
+
+			startTimer(interval_ms);
+		}
+		void pause() override
+		{
+			stopTimer();
+		}
+		void stop() override
+		{
+			stopTimer();
+
+			accumulator = 0.0;
+			delta_time = 0.0;
+			total_time = 0.0;
+		}
+	private:
+		std::chrono::time_point<std::chrono::high_resolution_clock> last_hardware_time;
+	};
+	class CRST_Window : public Core::ApplicationWindowBase, public juce::DocumentWindow
+	{
+	public:
+		CRST_Window() : DocumentWindow("JUCE Window", juce::Colours::black, allButtons)
+		{
+			component = new JUCE_Functionality();
+			setContentOwned(component, true);
 			centreWithSize(800, 600);
 			setVisible(true);
 		}
 		void routeEvent(const std::function<void(Core::EventBase&)>& callback) override
 		{
-			main_comp->send_event = callback;
+			// ApplicationBase::onEvent -> dispatch_event_callback
+			dispatch_event_callback = callback;
+			component->comp_dispatch_event_callback = dispatch_event_callback;
 		}
 		void closeButtonPressed() override
 		{
 			std::cout << "[Platform] Requesting quit..." << std::endl;
 			Core::WindowClose quit_event;
-			if (main_comp->send_event) main_comp->send_event(quit_event);
+			if (dispatch_event_callback) dispatch_event_callback(quit_event);
 			if (quit_event.handled)
 			{
 				std::cout << "[Platform] Engine has quited" << std::endl;
@@ -114,14 +168,19 @@ namespace Crystal::Platform
 			}
 		}
 	private:
-		JUCE_MainComponent* main_comp;
+		JUCE_Functionality* component;
 	};
 }
 namespace Crystal::Core
 {
-	std::unique_ptr<WindowBase> WindowBase::createWindow()
+	std::unique_ptr<MinimumWindowBase> createWindow()
 	{
-		return std::make_unique<Platform::CRSTWindow>();
+		return std::make_unique<Platform::CRST_Window>();
+	}
+
+	std::unique_ptr<MinimumTimerBase> createTimer(CRSTf64 time_step)
+	{
+		return std::make_unique<Platform::CRST_Timer>(time_step);
 	}
 }
 class JUCE_Entry : public juce::JUCEApplication
@@ -136,7 +195,7 @@ public:
 		redirector = std::make_unique<Crystal::Platform::OutputRedirector>();
 
 		main_app = Crystal::Core::createApplication();
-		main_app->initialise();
+		main_app->initialise(0.01666667);
 	}
 	void shutdown() override
 	{
@@ -153,3 +212,4 @@ private:
 	//==============================================================================
 };
 START_JUCE_APPLICATION(JUCE_Entry)
+//==============================================================================

@@ -89,12 +89,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Core\Core_Mininum.h" />
+    <ClCompile Include="Source\Core\Application.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\Event.h" />
     <ClInclude Include="Source\Core\Layer.h" />
+    <ClInclude Include="Source\Core\Timer.h" />
     <ClInclude Include="Source\Core\TypeAndConcepts.h" />
+    <ClInclude Include="Source\Core\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

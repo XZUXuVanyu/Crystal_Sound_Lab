@@ -9,8 +9,8 @@
         <FILE id="wXFgMb" name="SandBox.cpp" compile="1" resource="0" file="Source/App/SandBox.cpp"/>
       </GROUP>
       <GROUP id="{77375741-0115-3F9B-E356-A90F2460D322}" name="Platform">
-        <FILE id="HGftQZ" name="JUCE_Impl_Minimum.cpp" compile="1" resource="0"
-              file="Source/Platform/JUCE_Impl_Minimum.cpp"/>
+        <FILE id="gAA3CK" name="JUCE_Platform.cpp" compile="1" resource="0"
+              file="Source/Platform/JUCE_Platform.cpp"/>
       </GROUP>
     </GROUP>
   </MAINGROUP>

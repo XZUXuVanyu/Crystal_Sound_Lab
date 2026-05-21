@@ -334,7 +334,7 @@
     <ClCompile Include="Source\App\SandBox.cpp">
       <Filter>Crystal_App\Source\App</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Platform\JUCE_Impl_Minimum.cpp">
+    <ClCompile Include="Source\Platform\JUCE_Platform.cpp">
       <Filter>Crystal_App\Source\Platform</Filter>
     </ClCompile>
     <ClCompile Include="D:\JUCE\modules\juce_core\containers\juce_AbstractFifo.cpp">
@@ -2029,6 +2029,18 @@
     <ClCompile Include="D:\JUCE\modules\juce_gui_basics\juce_gui_basics.mm">
       <Filter>JUCE Modules\juce_gui_basics</Filter>
     </ClCompile>
+    <ClCompile Include="D:\JUCE\modules\juce_gui_basics\juce_gui_basics_2.cpp">
+      <Filter>JUCE Modules\juce_gui_basics</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\JUCE\modules\juce_gui_basics\juce_gui_basics_3.cpp">
+      <Filter>JUCE Modules\juce_gui_basics</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\JUCE\modules\juce_gui_basics\juce_gui_basics_4.cpp">
+      <Filter>JUCE Modules\juce_gui_basics</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\JUCE\modules\juce_gui_basics\juce_gui_basics_5.cpp">
+      <Filter>JUCE Modules\juce_gui_basics</Filter>
+    </ClCompile>
     <ClCompile Include="D:\JUCE\modules\juce_gui_extra\code_editor\juce_CodeDocument.cpp">
       <Filter>JUCE Modules\juce_gui_extra\code_editor</Filter>
     </ClCompile>
@@ -2201,6 +2213,18 @@
       <Filter>JUCE Library Code</Filter>
     </ClCompile>
     <ClCompile Include="JuceLibraryCode\include_juce_gui_basics.cpp">
+      <Filter>JUCE Library Code</Filter>
+    </ClCompile>
+    <ClCompile Include="JuceLibraryCode\include_juce_gui_basics_2.cpp">
+      <Filter>JUCE Library Code</Filter>
+    </ClCompile>
+    <ClCompile Include="JuceLibraryCode\include_juce_gui_basics_3.cpp">
+      <Filter>JUCE Library Code</Filter>
+    </ClCompile>
+    <ClCompile Include="JuceLibraryCode\include_juce_gui_basics_4.cpp">
+      <Filter>JUCE Library Code</Filter>
+    </ClCompile>
+    <ClCompile Include="JuceLibraryCode\include_juce_gui_basics_5.cpp">
       <Filter>JUCE Library Code</Filter>
     </ClCompile>
     <ClCompile Include="JuceLibraryCode\include_juce_gui_extra.cpp">
@@ -2643,6 +2667,12 @@
     <ClInclude Include="D:\JUCE\modules\juce_core\time\juce_Time.h">
       <Filter>JUCE Modules\juce_core\time</Filter>
     </ClInclude>
+    <ClInclude Include="D:\JUCE\modules\juce_core\time\juce_TimedDiagnostic.h">
+      <Filter>JUCE Modules\juce_core\time</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\JUCE\modules\juce_core\time\juce_TimeUnits.h">
+      <Filter>JUCE Modules\juce_core\time</Filter>
+    </ClInclude>
     <ClInclude Include="D:\JUCE\modules\juce_core\unit_tests\juce_UnitTest.h">
       <Filter>JUCE Modules\juce_core\unit_tests</Filter>
     </ClInclude>
@@ -2849,9 +2879,6 @@
     </ClInclude>
     <ClInclude Include="D:\JUCE\modules\juce_graphics\contexts\juce_LowLevelGraphicsSoftwareRenderer.h">
       <Filter>JUCE Modules\juce_graphics\contexts</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\JUCE\modules\juce_graphics\detail\juce_FontRendering.h">
-      <Filter>JUCE Modules\juce_graphics\detail</Filter>
     </ClInclude>
     <ClInclude Include="D:\JUCE\modules\juce_graphics\detail\juce_JustifiedText.h">
       <Filter>JUCE Modules\juce_graphics\detail</Filter>
