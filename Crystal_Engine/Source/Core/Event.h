@@ -20,9 +20,12 @@ namespace Crystal::Core
         static EventType getStaticType() { return EventType_T; }
         EventType getType() const override { return getStaticType(); }
     };
+}
+namespace Crystal::Core
+{
     struct MouseMoved : Event<EventType::MouseMoved>
     {
-	    MouseMoved(CRSTf32 x, CRSTf32 y) : x(x), y(y) {}
+        MouseMoved(CRSTf32 x, CRSTf32 y) : x(x), y(y) {}
         CRSTf32 x, y;
     };
     struct MouseButtonPressed : Event<EventType::MouseButtonPressed>
@@ -63,3 +66,4 @@ namespace Crystal::Core
 #define CRST_BIND_EVENT_CALLBACK(fn) [this](auto&&... args) -> decltype(auto) \
     { return this->fn(std::forward<decltype(args)>(args)...); }
 }
+//==============================================================================

@@ -10,24 +10,47 @@
 //==============================================================================
 namespace Crystal::Core
 {
-	class ApplicationBase
-	{
+    class MinimumApplicationBase
+    {
     public:
-        //==============================================================================
-        ApplicationBase(const ApplicationBase&) = delete;
-        ApplicationBase& operator=(const ApplicationBase&) = delete;
-		virtual ~ApplicationBase() = default;
+        using is_application = void;
+        //------------------------------------------------------------------------------
+        virtual ~MinimumApplicationBase() = default;
+        MinimumApplicationBase(const MinimumApplicationBase&) = delete;
+        MinimumApplicationBase& operator=(const MinimumApplicationBase&) = delete;
+        //------------------------------------------------------------------------------
+        virtual void initialise(CRSTf64 time_step) = 0;
+        virtual void onTimeAdvance(CRSTf64 dt) = 0;
+        virtual void onEvent(EventBase& e) = 0;
+        //------------------------------------------------------------------------------
+        template<isCRSTLayer Layer_T>
+        void pushLayer(std::unique_ptr<Layer_T> layer)
+        {
+            layers.emplace_back(std::move(layer));
+        }
+    protected:
+        MinimumApplicationBase() = default;
+    protected:
+        std::vector<std::unique_ptr<LayerBase>> layers;
+        CRSTbool is_running = true;
+    };
+}
+namespace Crystal::Core
+{
+    class WindowedApplicationBase : public MinimumApplicationBase
+    {
+    public:
         //==============================================================================
         /// <summary>
         /// Initialize the application
         /// </summary>
         /// <remarks>
         /// This method creates the main application window and routes native system events 
-		/// to the underlying event system. It must be invoked manually within the 
-		/// platform-specific application.
+        /// to the underlying event system. It must be invoked manually within the 
+        /// platform-specific application.
         /// </remarks>
-        virtual void        initialise(CRSTf64 time_step)
-    	{
+        void        initialise(CRSTf64 time_step) override
+        {
             timer = createTimer(time_step);
             timer->start(CRST_BIND_EVENT_CALLBACK(onTimeAdvance));
 
@@ -37,14 +60,14 @@ namespace Crystal::Core
             std::cout << "[Engine] Engine initialised" << std::endl;
         }
         //==============================================================================
-        virtual void        onTimeAdvance(CRSTf64 dt) noexcept
+        void        onTimeAdvance(CRSTf64 dt) noexcept override
         {
-	        for (auto layer_it = layers.begin(); layer_it != layers.end(); ++layer_it)
-	        {
+            for (auto layer_it = layers.begin(); layer_it != layers.end(); ++layer_it)
+            {
                 (*layer_it)->onTimeAdvance(dt);
-	        }
+            }
         }
-        virtual void        onEvent(EventBase& e)
+        void        onEvent(EventBase& e) override
         {
             EventDispatcher dispatcher{ e };
             dispatcher.dispatch<WindowClose>(CRST_BIND_EVENT_CALLBACK(onWindowClose));
@@ -61,28 +84,18 @@ namespace Crystal::Core
             e.handled = true;
             return true;
         }
-        //==============================================================================
-        /// <summary>
-        /// Push a layer backward into <see cref="layers"/>
-        /// </summary>
-        /// <param name="layer"> <see cref="std::unique_ptr"/> of the Layer to be pushed </param>
-        template<isCRSTLayer Layer_T>
-        void                pushLayer(std::unique_ptr<Layer_T> layer)
-        {
-            layers.emplace_back(std::move(layer));
-        }
     protected:
-        //==============================================================================
-        ApplicationBase() = default;
+        WindowedApplicationBase() = default;
     protected:
-        //==============================================================================
         std::unique_ptr<MinimumWindowBase> window;
         std::unique_ptr<MinimumTimerBase> timer;
-        std::vector<std::unique_ptr<LayerBase>> layers;
     };
+
+    /// TODO: class TaskApplicationBase : public MinimumApplicationBase
+
 }
 namespace Crystal::Core
 {
-    std::unique_ptr<ApplicationBase> createApplication();
+    std::unique_ptr<MinimumApplicationBase> createApplication();
 }
 //==============================================================================

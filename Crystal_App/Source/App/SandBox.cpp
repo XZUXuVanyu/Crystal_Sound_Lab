@@ -1,5 +1,4 @@
 #include "Core/Application.h"
-#include "juce_graphics/fonts/harfbuzz/OT/Layout/GSUB/AlternateSet.hh"
 using namespace Crystal::Core;
 namespace Crystal::Client
 {
@@ -35,12 +34,12 @@ namespace Crystal::Client
 }
 namespace Crystal::Client
 {
-	class Sandbox : public ApplicationBase
+	class Sandbox : public WindowedApplicationBase
 	{
 	public:
 		void initialise(CRSTf64 time_step) override
 		{
-			ApplicationBase::initialise(time_step);
+			WindowedApplicationBase::initialise(time_step);
 			pushLayer(std::make_unique<AppLayer>());
 			pushLayer(std::make_unique<UIOverlayLayer>());
 
@@ -48,13 +47,13 @@ namespace Crystal::Client
 		}
 		void onEvent(EventBase& e) override
 		{
-			ApplicationBase::onEvent(e);
+			WindowedApplicationBase::onEvent(e);
 		}
 	};
 }
 namespace Crystal::Core
 {
-    std::unique_ptr<ApplicationBase> createApplication()
+    std::unique_ptr<MinimumApplicationBase> createApplication()
     {
         return std::make_unique<Client::Sandbox>();
     }

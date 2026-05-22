@@ -1,9 +1,9 @@
 //==============================================================================
 #include <chrono>
 #include <iostream>
-#include <JuceHeader.h>
 #include <streambuf>
 #include <string>
+#include <JuceHeader.h>
 #include "Core/Application.h"
 #include "Core/Event.h"
 #include "Core/Timer.h"
@@ -11,8 +11,6 @@
 //==============================================================================
 namespace Crystal::Platform
 {
-	class CRST_Window;
-
 	class OutputStreamBuf : public std::streambuf
 	{
 	protected:
@@ -207,7 +205,7 @@ public:
 	//==============================================================================
 private:
 	//==============================================================================
-	std::unique_ptr<Crystal::Core::ApplicationBase> main_app;
+	std::unique_ptr<Crystal::Core::MinimumApplicationBase> main_app;
 	std::unique_ptr<Crystal::Platform::OutputRedirector> redirector;
 	//==============================================================================
 };
