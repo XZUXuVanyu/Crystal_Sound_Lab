@@ -1,9 +1,7 @@
 //==============================================================================
 #pragma once
-#include "TypeAndConcepts.h"
 #include <iostream>
 #include <cassert>
-#include <type_traits>
 //==============================================================================
 /*
 	Compile-time
@@ -30,13 +28,6 @@
 #define CRST_CONSTRAIN(condition, msg) \
 	static_assert(condition, msg)
 
-//==============================================================================
-/*
-   Run-time
-   These macros handle the "Laws of Physics" during engine execution.
-*/
-//==============================================================================
-
 #ifdef _DEBUG
 /**
  * @brief		CRST_EXPECT macro (Debug)
@@ -47,13 +38,15 @@
  */
 #define CRST_EXPECT(condition, msg, ...) \
 		do { \
-			if (!(condition)) { \
-				std::cerr << "[CRYSTAL_EXPECT_FAILED]\n" \
-						  << "Condition: " << #condition << "\n" \
-						  << "Message:   " << msg << "\n" \
-						  << "Location:  " << __FILE__ << ":" << __LINE__ << std::endl; \
+			if (condition) [[likely]] {} \
+			else [[unlikely]] { \
+				std::cerr << \
+				"[CRYSTAL_EXPECT_FAILED]\n" \
+				<< "Condition: " << #condition << "\n" \
+				<< "Message:   " << msg << "\n" \
+				<< "Location:  " << __FILE__ << ":" << __LINE__ << std::endl; \
 				return __VA_ARGS__; \
-			} \
+			}\
 		} while (0)
 
 /**
@@ -65,11 +58,13 @@
  */
 #define CRST_ASSERT(condition, msg) \
 		do { \
-			if (!(condition)) { \
-				std::cerr << "[CRYSTAL_ASSERT_FAILED]\n" \
-						  << "Message:  " << msg << "\n" \
-						  << "Location: " << __FILE__ << ":" << __LINE__ << std::endl; \
-				assert(false && msg); \
+			if (condition) [[likely]] {} \
+			else [[unlikely]] { \
+				std::cerr \
+				<< "[CRYSTAL_ASSERT_FAILED]\n" \
+				<< "Message:  " << msg << "\n" \
+				<< "Location: " << __FILE__ << ":" << __LINE__ << std::endl; \
+				assert(false and msg); \
 			} \
 		} while (0)
 
@@ -83,7 +78,8 @@
  */
 #define CRST_EXPECT(condition, msg, ...) \
 		do { \
-			if (!(condition)) { \
+			if (condition) [[likely]] \
+			else { \
 				return __VA_ARGS__; \
 			} \
 		} while (0)
@@ -114,3 +110,9 @@
 #define CRST_SINGLETON(ClassName) \
     CRST_NON_COPYABLE(ClassName) \
     CRST_NON_MOVABLE(ClassName)
+
+#define CRST_BIND_CALLBACK(func) [this](auto&&... args) -> decltype(auto) \
+    { return this->func(std::forward<decltype(args)>(args)...); }
+
+#define CRST_BIND_CALLBACK_WITH_INSTANCE(func, instance) [instance](auto&&... args) -> decltype(auto) \
+    { return instance->func(std::forward<decltype(args)>(args)...); }

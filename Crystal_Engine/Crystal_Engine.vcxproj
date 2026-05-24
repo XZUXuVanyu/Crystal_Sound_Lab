@@ -89,14 +89,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Core\Application.h" />
+    <ClCompile Include="Source\Framework\Application.h" />
+    <ClCompile Include="Source\Message\Command.h" />
+    <ClCompile Include="Source\Message\CommandMapper.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Core\Event.h" />
-    <ClInclude Include="Source\Core\Layer.h" />
-    <ClInclude Include="Source\Core\Timer.h" />
-    <ClInclude Include="Source\Core\TypeAndConcepts.h" />
-    <ClInclude Include="Source\Core\Window.h" />
+    <ClInclude Include="Source\Message\MessageBus.h" />
+    <ClInclude Include="Source\Message\Event.h" />
+    <ClInclude Include="Source\Framework\Layer.h" />
+    <ClInclude Include="Source\Framework\Timer.h" />
+    <ClInclude Include="Source\Core\CoreTypeDef.h" />
+    <ClInclude Include="Source\Core\CoreUtilities.h" />
+    <ClInclude Include="Source\Framework\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,24 +3,32 @@
 #include <functional>
 #include <memory>
 //==============================================================================
-namespace Crystal::Core
+namespace Crystal::Framework
 {
-	struct EventBase;
+	struct WindowContext
+	{
+		std::string_view title = "Crystal Engine";
+		CRSTu32 width = 1280;
+		CRSTu32 height = 720;
+	};
+}
+namespace Crystal::Framework
+{
 	class MinimumWindowBase
     {
     public:
-        using is_window = void;
+        using is_crst_window = void;
 		//==============================================================================
 		MinimumWindowBase(const MinimumWindowBase&) = delete;
 		MinimumWindowBase& operator=(const MinimumWindowBase&) = delete;
 		virtual ~MinimumWindowBase() = default;
 		//==============================================================================
-        virtual void routeEvent(const std::function<void(EventBase&)>& callback) = 0;
+        virtual void routeEvent(const std::function<void(Message::EventBase&)>& callback) = 0;
 	protected:
 		MinimumWindowBase() = default;
     };
 }
-namespace Crystal::Core
+namespace Crystal::Framework
 {
 	class ApplicationWindowBase : public MinimumWindowBase
 	{
@@ -32,15 +40,16 @@ namespace Crystal::Core
 		ApplicationWindowBase() = default;
 		~ApplicationWindowBase() override = default;
 	protected:
-		void dispatchToEngine(EventBase& e) const
+		void dispatchToEngine(Message::EventBase& e) const
 		{
 			if (dispatch_event_callback) dispatch_event_callback(e);
 		}
 	protected:
-		std::function<void(EventBase&)> dispatch_event_callback = nullptr;
+		std::function<void(Message::EventBase&)> dispatch_event_callback = nullptr;
 	};
 }
-namespace Crystal::Core
+namespace Crystal::Framework
 {
 	std::unique_ptr<MinimumWindowBase> createWindow();
 }
+//==============================================================================

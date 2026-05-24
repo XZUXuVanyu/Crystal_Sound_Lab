@@ -1,35 +1,31 @@
-#include "Core/Application.h"
-using namespace Crystal::Core;
+#include "Framework/Application.h"
+#include "Message/MessageBus.h"
+using namespace Crystal::Framework;
+using namespace Crystal::Message;
 namespace Crystal::Client
 {
 	class AppLayer : public LayerBase
 	{
 	public:
-		AppLayer() : LayerBase("App") {}
+		AppLayer(std::string app_name) : LayerBase(std::move(app_name)) {}
 		void onEvent(EventBase& e) override
 		{
 			EventDispatcher dispatcher{e};
+			auto checked =
 			dispatcher.dispatch<MouseButtonPressed>([this](MouseButtonPressed& event)
 			{
-				std::cout << "[Layer: App] MouseButtonPressed: button = " <<
+				std::cout << "MouseButtonPressed: button = " <<
 					static_cast<int>(event.button) << std::endl;
 				return true;
 			});
 		}
-	};
-	class UIOverlayLayer : public Crystal::Core::LayerBase
-	{
-	public:
-		UIOverlayLayer() : LayerBase("UI_Overlay") {}
-		void onEvent(EventBase& e) override
+
+		void onAttach() override
 		{
-			EventDispatcher dispatcher{e};
-			dispatcher.dispatch<MouseButtonPressed>([this](MouseButtonPressed& event)
-			{
-				std::cout << "[Layer: UI] MouseButtonPressed" << std::endl;
-				return false;
-			});
+			std::cout << "[Layer: App] onAttach()" << std::endl;
 		}
+		void onDetach() override {}
+		void onTimeAdvance(CRSTf64 dt) override {}
 	};
 }
 namespace Crystal::Client
@@ -37,21 +33,18 @@ namespace Crystal::Client
 	class Sandbox : public WindowedApplicationBase
 	{
 	public:
-		void initialise(CRSTf64 time_step) override
+		void userInitialise() override
 		{
-			WindowedApplicationBase::initialise(time_step);
-			pushLayer(std::make_unique<AppLayer>());
-			pushLayer(std::make_unique<UIOverlayLayer>());
-
+			submitCommand<LayerPush>(std::make_unique<AppLayer>("Crystal"));
 			std::cout << "[Sandbox] Sandbox initialised" << std::endl;
 		}
-		void onEvent(EventBase& e) override
-		{
-			WindowedApplicationBase::onEvent(e);
-		}
+	protected:
+		void userTimeAdvance(CRSTf64 dt) override{}
+		void userCommandProcess(CommandBase& cmd) override{}
+		void userEventProcess(EventBase& e) override {}
 	};
 }
-namespace Crystal::Core
+namespace Crystal::Framework
 {
     std::unique_ptr<MinimumApplicationBase> createApplication()
     {

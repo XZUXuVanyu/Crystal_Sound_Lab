@@ -1,14 +1,17 @@
 //==============================================================================
 #include <chrono>
 #include <iostream>
+#include <JuceHeader.h>
 #include <streambuf>
 #include <string>
-#include <JuceHeader.h>
-#include "Core/Application.h"
-#include "Core/Event.h"
-#include "Core/Timer.h"
-#include "Core/Window.h"
+#include "Framework/Application.h"
+#include "Framework/Timer.h"
+#include "Framework/Window.h"
+#include "Message/MessageBus.h"
 //==============================================================================
+using namespace Crystal;
+Framework::MinimumApplicationBase* Framework::MinimumApplicationBase::instance = nullptr;
+
 namespace Crystal::Platform
 {
 	class OutputStreamBuf : public std::streambuf
@@ -55,16 +58,20 @@ namespace Crystal::Platform
 	public:
 		OutputRedirector()
 		{
-			original_buf = std::cout.rdbuf();
+			original_cout_buf = std::cout.rdbuf();
+			original_cerr_buf = std::cerr.rdbuf();
 			std::cout.rdbuf(&juce_buf);
+			std::cerr.rdbuf(&juce_buf);
 		}
 		~OutputRedirector()
 		{
-			std::cout.rdbuf(original_buf);
+			std::cout.rdbuf(original_cout_buf);
+			std::cerr.rdbuf(original_cerr_buf);
 		}
 	private:
 		OutputStreamBuf juce_buf;
-		std::streambuf* original_buf = nullptr;
+		std::streambuf* original_cout_buf = nullptr;
+		std::streambuf* original_cerr_buf = nullptr;
 	};
 }
 namespace Crystal::Platform
@@ -72,16 +79,15 @@ namespace Crystal::Platform
 	class JUCE_Functionality : public juce::Component
 	{
 	public:
-		std::function<void(Core::EventBase&)> comp_dispatch_event_callback = nullptr;
+		std::function<void(Message::EventBase&)> comp_dispatch_event_callback = nullptr;
 		void mouseDown(const juce::MouseEvent& event) override
 		{
-			Core::MouseButtonCode button = Core::MouseButtonCode::None;
-			if (event.mods.isLeftButtonDown()) button = Core::MouseButtonCode::Left;
-			if (event.mods.isRightButtonDown()) button = Core::MouseButtonCode::Right;
-			if (event.mods.isMiddleButtonDown()) button = Core::MouseButtonCode::Middle;
+			Message::MouseButtonCode button = Message::MouseButtonCode::None;
+			if (event.mods.isLeftButtonDown()) button = Message::MouseButtonCode::Left;
+			if (event.mods.isRightButtonDown()) button = Message::MouseButtonCode::Right;
+			if (event.mods.isMiddleButtonDown()) button = Message::MouseButtonCode::Middle;
 
-			Core::MouseButtonPressed engine_event(button);
-			if (comp_dispatch_event_callback) comp_dispatch_event_callback(engine_event);
+			Message::raiseEvent<Message::MouseButtonPressed>(button);
 		}
 		void mouseMove(const juce::MouseEvent& event) override
 		{
@@ -89,14 +95,13 @@ namespace Crystal::Platform
 			x = static_cast<CRSTf32>(event.x) / static_cast<CRSTf32>(getWidth());
 			y = static_cast<CRSTf32>(event.y) / static_cast<CRSTf32>(getHeight());
 
-			Core::MouseMoved engine_event(x, y);
-			if (comp_dispatch_event_callback) comp_dispatch_event_callback(engine_event);
+			Message::raiseEvent<Message::MouseMoved>(x, y);
 		}
 	};
 }
 namespace Crystal::Platform
 {
-	class CRST_Timer : public juce::Timer, public Core::FixedTimeStepBase
+	class CRST_Timer : public juce::Timer, public Framework::FixedTimeStepBase
 	{
 	public:
 		CRST_Timer(CRSTf64 time_step) : FixedTimeStepBase(time_step)
@@ -108,7 +113,6 @@ namespace Crystal::Platform
 			auto now = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<CRSTf64> elapsed = now - last_hardware_time;
 			last_hardware_time = now;
-
 			FixedTimeStepBase::onTimeAdvance(elapsed.count());
 			// notify_time_advance_callback(time_step) -> ApplicationBase::onTimeAdvance(time_step)
 		}
@@ -138,7 +142,7 @@ namespace Crystal::Platform
 	private:
 		std::chrono::time_point<std::chrono::high_resolution_clock> last_hardware_time;
 	};
-	class CRST_Window : public Core::ApplicationWindowBase, public juce::DocumentWindow
+	class CRST_Window : public Framework::ApplicationWindowBase, public juce::DocumentWindow
 	{
 	public:
 		CRST_Window() : DocumentWindow("JUCE Window", juce::Colours::black, allButtons)
@@ -148,7 +152,7 @@ namespace Crystal::Platform
 			centreWithSize(800, 600);
 			setVisible(true);
 		}
-		void routeEvent(const std::function<void(Core::EventBase&)>& callback) override
+		void routeEvent(const std::function<void(Message::EventBase&)>& callback) override
 		{
 			// ApplicationBase::onEvent -> dispatch_event_callback
 			dispatch_event_callback = callback;
@@ -157,11 +161,9 @@ namespace Crystal::Platform
 		void closeButtonPressed() override
 		{
 			std::cout << "[Platform] Requesting quit..." << std::endl;
-			Core::WindowClose quit_event;
-			if (dispatch_event_callback) dispatch_event_callback(quit_event);
-			if (quit_event.handled)
+			Message::submitCommand<Message::ApplicationShutDown>();
+			if (!Framework::MinimumApplicationBase::isRunning())
 			{
-				std::cout << "[Platform] Engine has quited" << std::endl;
 				juce::JUCEApplication::getInstance()->systemRequestedQuit();
 			}
 		}
@@ -169,13 +171,12 @@ namespace Crystal::Platform
 		JUCE_Functionality* component;
 	};
 }
-namespace Crystal::Core
+namespace Crystal::Framework
 {
 	std::unique_ptr<MinimumWindowBase> createWindow()
 	{
 		return std::make_unique<Platform::CRST_Window>();
 	}
-
 	std::unique_ptr<MinimumTimerBase> createTimer(CRSTf64 time_step)
 	{
 		return std::make_unique<Platform::CRST_Timer>(time_step);
@@ -192,8 +193,10 @@ public:
 	{
 		redirector = std::make_unique<Crystal::Platform::OutputRedirector>();
 
-		main_app = Crystal::Core::createApplication();
-		main_app->initialise(0.01666667);
+		main_app = Framework::createApplication();
+		main_app->initialise(Framework::ApplicationContext{
+		.name = "Sandbox" , .version = "0.0.1", .type = Framework::ApplicationType::Windowed,
+			.time_step = 0.01 });
 	}
 	void shutdown() override
 	{
@@ -205,8 +208,8 @@ public:
 	//==============================================================================
 private:
 	//==============================================================================
-	std::unique_ptr<Crystal::Core::MinimumApplicationBase> main_app;
-	std::unique_ptr<Crystal::Platform::OutputRedirector> redirector;
+	std::unique_ptr<Framework::MinimumApplicationBase> main_app;
+	std::unique_ptr<Platform::OutputRedirector> redirector;
 	//==============================================================================
 };
 START_JUCE_APPLICATION(JUCE_Entry)

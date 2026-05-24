@@ -2,14 +2,15 @@
 #pragma once
 #include <functional>
 #include <memory>
-#include "TypeAndConcepts.h"
+#include "../Core/CoreTypeDef.h"
+#include "../Core/CoreUtilities.h"
 //==============================================================================
-namespace Crystal::Core
+namespace Crystal::Framework
 {
 	class MinimumTimerBase
 	{
 	public:
-		using is_timer = void;
+		using is_crst_timer = void;
 		//==============================================================================
 		MinimumTimerBase(const MinimumTimerBase&) = delete;
 		MinimumTimerBase& operator=(const MinimumTimerBase&) = delete;
@@ -28,7 +29,7 @@ namespace Crystal::Core
 		MinimumTimerBase() = default;
 	};
 }
-namespace Crystal::Core
+namespace Crystal::Framework
 {
 	class FixedTimeStepBase : public MinimumTimerBase
 	{
@@ -37,22 +38,28 @@ namespace Crystal::Core
 		// You must implement this !!!
 		// virtual void start(const std::function<void(CRSTf64)>& callback) = 0;
 		//==============================================================================
-		FixedTimeStepBase(CRSTf64 step) : time_step(step) {}
+		FixedTimeStepBase(CRSTf64 step) : time_step(step)
+		{
+			CRST_ASSERT(step > 0.0, "Time step must be positive");
+		}
 		~FixedTimeStepBase() override = default;
 		//==============================================================================
 		void onTimeAdvance(CRSTf64 raw_dt) final
 		{
+			CRST_EXPECT(raw_dt >= 0.0,
+				"Hardware clock inversion");
+			CRST_ASSERT(time_step > 0.0,
+				"Simulation step collapsed to zero");
+
 			delta_time = raw_dt;
 			accumulator += raw_dt;
-
+			
 			while (accumulator >= time_step)
 			{
-				if (notify_time_advance_callback)
-				{
-					notify_time_advance_callback(time_step);
-				}
 				total_time += time_step;
 				accumulator -= time_step;
+
+				if (notify_time_advance_callback) notify_time_advance_callback(time_step);
 			}
 		}
 		//==============================================================================
@@ -68,7 +75,8 @@ namespace Crystal::Core
 		CRSTf64 total_time = 0.0;
 	};
 }
-namespace Crystal::Core
+namespace Crystal::Framework
 {
 	std::unique_ptr<MinimumTimerBase> createTimer(CRSTf64 time_step);
 }
+//==============================================================================
