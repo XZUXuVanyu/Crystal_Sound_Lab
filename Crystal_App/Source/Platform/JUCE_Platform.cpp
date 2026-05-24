@@ -4,14 +4,12 @@
 #include <JuceHeader.h>
 #include <streambuf>
 #include <string>
-#include "Framework/Application.h"
-#include "Framework/Timer.h"
-#include "Framework/Window.h"
-#include "Message/MessageBus.h"
+
+#include <CRST_Core/CRST_Core.h>
+#include <CRST_Framework/CRST_Framework.h>
+#include <CRST_Message/CRST_Message.h>
 //==============================================================================
 using namespace Crystal;
-Framework::MinimumApplicationBase* Framework::MinimumApplicationBase::instance = nullptr;
-
 namespace Crystal::Platform
 {
 	class OutputStreamBuf : public std::streambuf

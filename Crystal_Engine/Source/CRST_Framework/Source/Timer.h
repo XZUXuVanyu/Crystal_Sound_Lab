@@ -2,8 +2,7 @@
 #pragma once
 #include <functional>
 #include <memory>
-#include "../Core/CoreTypeDef.h"
-#include "../Core/CoreUtilities.h"
+#include <CRST_Core/CRST_Core.h>
 //==============================================================================
 namespace Crystal::Framework
 {
@@ -28,16 +27,9 @@ namespace Crystal::Framework
 	protected:
 		MinimumTimerBase() = default;
 	};
-}
-namespace Crystal::Framework
-{
 	class FixedTimeStepBase : public MinimumTimerBase
 	{
 	public:
-		//==============================================================================
-		// You must implement this !!!
-		// virtual void start(const std::function<void(CRSTf64)>& callback) = 0;
-		//==============================================================================
 		FixedTimeStepBase(CRSTf64 step) : time_step(step)
 		{
 			CRST_ASSERT(step > 0.0, "Time step must be positive");
@@ -46,14 +38,15 @@ namespace Crystal::Framework
 		//==============================================================================
 		void onTimeAdvance(CRSTf64 raw_dt) final
 		{
-			CRST_EXPECT(raw_dt >= 0.0,
-				"Hardware clock inversion");
-			CRST_ASSERT(time_step > 0.0,
-				"Simulation step collapsed to zero");
+			CRST_EXPECT(raw_dt >= 0.0, "Hardware clock inversion");
+			CRST_ASSERT(time_step > 0.0, "Simulation step collapsed to zero");
+
+			const CRSTf64 max_catchup_buffer = time_step * 3.0;
+			if (raw_dt > max_catchup_buffer) raw_dt = max_catchup_buffer;
 
 			delta_time = raw_dt;
 			accumulator += raw_dt;
-			
+
 			while (accumulator >= time_step)
 			{
 				total_time += time_step;

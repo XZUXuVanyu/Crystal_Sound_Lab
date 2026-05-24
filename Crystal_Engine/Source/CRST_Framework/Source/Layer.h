@@ -1,7 +1,10 @@
 //==============================================================================
 #pragma once
-#include "../Core/CoreTypeDef.h"
-#include "../Core/CoreUtilities.h"
+#include <CRST_Core/CRST_Core.h>
+#include <string>
+#include <string_view>
+#include <concepts>
+
 namespace Crystal::Message
 {
 	struct EventBase;

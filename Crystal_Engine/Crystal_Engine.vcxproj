@@ -58,6 +58,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -76,6 +77,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -89,18 +91,22 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Framework\Application.h" />
-    <ClCompile Include="Source\Message\Command.h" />
-    <ClCompile Include="Source\Message\CommandMapper.cpp" />
+    <ClInclude Include="Source\CRST_Core\CRST_Core.h" />
+    <ClInclude Include="Source\CRST_Core\Source\CoreTypeDef.h" />
+    <ClInclude Include="Source\CRST_Core\Source\CoreUtilities.h" />
+    <ClInclude Include="Source\CRST_Framework\CRST_Framework.h" />
+    <ClInclude Include="Source\CRST_Framework\Source\Application.h" />
+    <ClInclude Include="Source\CRST_Framework\Source\Layer.h" />
+    <ClInclude Include="Source\CRST_Framework\Source\Timer.h" />
+    <ClInclude Include="Source\CRST_Framework\Source\Window.h" />
+    <ClInclude Include="Source\CRST_Message\CRST_Message.h" />
+    <ClInclude Include="Source\CRST_Message\Source\Command.h" />
+    <ClInclude Include="Source\CRST_Message\Source\Event.h" />
+    <ClInclude Include="Source\CRST_Message\Source\MessageBus.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Message\MessageBus.h" />
-    <ClInclude Include="Source\Message\Event.h" />
-    <ClInclude Include="Source\Framework\Layer.h" />
-    <ClInclude Include="Source\Framework\Timer.h" />
-    <ClInclude Include="Source\Core\CoreTypeDef.h" />
-    <ClInclude Include="Source\Core\CoreUtilities.h" />
-    <ClInclude Include="Source\Framework\Window.h" />
+    <ClCompile Include="Source\CRST_Framework\CRST_Framework.cpp" />
+    <ClCompile Include="Source\CRST_Message\CRST_Message.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

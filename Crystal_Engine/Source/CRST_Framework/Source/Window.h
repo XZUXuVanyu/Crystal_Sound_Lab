@@ -2,6 +2,12 @@
 #pragma once
 #include <functional>
 #include <memory>
+#include <string_view>
+#include <CRST_Core/CRST_Core.h>
+namespace Crystal::Message
+{
+	struct EventBase;
+}
 //==============================================================================
 namespace Crystal::Framework
 {
@@ -27,16 +33,9 @@ namespace Crystal::Framework
 	protected:
 		MinimumWindowBase() = default;
     };
-}
-namespace Crystal::Framework
-{
 	class ApplicationWindowBase : public MinimumWindowBase
 	{
 	public:
-		//==============================================================================
-		// You must implement this !!!
-		// virtual void routeEvent(const std::function<void(EventBase&)>& callback) = 0;
-		//==============================================================================
 		ApplicationWindowBase() = default;
 		~ApplicationWindowBase() override = default;
 	protected:

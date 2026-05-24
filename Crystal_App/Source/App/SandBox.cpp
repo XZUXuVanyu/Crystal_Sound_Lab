@@ -1,7 +1,10 @@
-#include "Framework/Application.h"
-#include "Message/MessageBus.h"
+//==============================================================================
+#include <CRST_Core/CRST_Core.h>
+#include <CRST_Framework/CRST_Framework.h>
+#include <CRST_Message/CRST_Message.h>
 using namespace Crystal::Framework;
 using namespace Crystal::Message;
+//==============================================================================
 namespace Crystal::Client
 {
 	class AppLayer : public LayerBase

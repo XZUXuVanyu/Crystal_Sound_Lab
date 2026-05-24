@@ -4,13 +4,11 @@
 #include <complex>
 #include <functional>
 #include <queue>
+#include <concepts>
 
-#include "../Core/CoreTypeDef.h"
-#include "../Framework/Layer.h"
-namespace Crystal::Framework
-{
-	class MinimumApplicationBase;
-}
+#include <CRST_Core/CRST_Core.h>
+#include <CRST_Framework/CRST_Framework.h>
+
 //==============================================================================
 namespace Crystal::Message
 {

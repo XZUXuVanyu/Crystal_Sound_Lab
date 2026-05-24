@@ -1,7 +1,7 @@
 //==============================================================================
 #include <algorithm>
+#include <iostream>
 #include "Command.h"
-#include "../Framework/Application.h"
 //==============================================================================
 namespace Crystal::Message
 {
