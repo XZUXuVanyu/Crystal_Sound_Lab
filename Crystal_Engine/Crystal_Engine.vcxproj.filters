@@ -74,9 +74,6 @@
     <ClInclude Include="Source\CRST_Time\Source\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CRST_Input\Source\InputBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\CRST_Input\Source\Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -5,6 +5,16 @@
 #include <string_view>
 #include <concepts>
 
+namespace Crystal::Input
+{
+	struct InputState;
+}
+
+namespace Crystal::Time
+{
+	class Duration;
+}
+
 namespace Crystal::Message
 {
 	struct EventBase;
@@ -27,7 +37,7 @@ namespace Crystal::Framework
         //==============================================================================
         virtual void onAttach() = 0;
         virtual void onDetach() = 0;
-        virtual void onTimeAdvance(CRSTf64 dt) = 0;
+        virtual void onTimeAdvance(const Time::Duration& duration, const Input::InputState& input) = 0;
         virtual void onEvent(Message::EventBase& e) = 0;
         //==============================================================================
         const std::string_view getName() const { return name; }

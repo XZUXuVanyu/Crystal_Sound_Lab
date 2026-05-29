@@ -100,7 +100,6 @@
     <ClInclude Include="Source\CRST_Framework\Source\Layer.h" />
     <ClInclude Include="Source\CRST_Framework\Source\Window.h" />
     <ClInclude Include="Source\CRST_Input\Source\Input.h" />
-    <ClInclude Include="Source\CRST_Input\Source\InputBuffer.h" />
     <ClInclude Include="Source\CRST_Message\CRST_Message.h" />
     <ClInclude Include="Source\CRST_Message\Source\Command.h" />
     <ClInclude Include="Source\CRST_Message\Source\Event.h" />

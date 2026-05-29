@@ -81,23 +81,6 @@ namespace Crystal::Platform
 	{
 	public:
 		std::function<void(Message::EventBase&)> comp_dispatch_event_callback = nullptr;
-		void mouseDown(const juce::MouseEvent& event) override
-		{
-			Message::MouseButtonCode button = Message::MouseButtonCode::None;
-			if (event.mods.isLeftButtonDown()) button = Message::MouseButtonCode::Left;
-			if (event.mods.isRightButtonDown()) button = Message::MouseButtonCode::Right;
-			if (event.mods.isMiddleButtonDown()) button = Message::MouseButtonCode::Middle;
-
-			Message::raiseEvent<Message::MouseButtonPressed>(button);
-		}
-		void mouseMove(const juce::MouseEvent& event) override
-		{
-			CRSTf32 x, y;
-			x = static_cast<CRSTf32>(event.x) / static_cast<CRSTf32>(getWidth());
-			y = static_cast<CRSTf32>(event.y) / static_cast<CRSTf32>(getHeight());
-
-			Message::raiseEvent<Message::MouseMoved>(x, y);
-		}
 	};
 }
 namespace Crystal::Platform
@@ -118,26 +101,39 @@ namespace Crystal::Platform
 		}
 		bool keyStateChanged(bool isKeyDown, juce::Component*) override
 		{
-			this->recordDiscreteInput(Input::InputBit::KeyW, juce::KeyPress::isKeyCurrentlyDown('w') || juce::KeyPress::isKeyCurrentlyDown('W'));
-			this->recordDiscreteInput(Input::InputBit::KeyA, juce::KeyPress::isKeyCurrentlyDown('a') || juce::KeyPress::isKeyCurrentlyDown('A'));
-			this->recordDiscreteInput(Input::InputBit::KeyS, juce::KeyPress::isKeyCurrentlyDown('s') || juce::KeyPress::isKeyCurrentlyDown('S'));
-			this->recordDiscreteInput(Input::InputBit::KeyD, juce::KeyPress::isKeyCurrentlyDown('d') || juce::KeyPress::isKeyCurrentlyDown('D'));
+			this->recordDiscreteInput(Input::DiscreteInputEvent{.absolute_time_nano = 0, .bit = Input::InputBit::KeyW,
+				.is_down = juce::KeyPress::isKeyCurrentlyDown('w') || juce::KeyPress::isKeyCurrentlyDown('W') });
+			this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::KeyA,
+				.is_down = juce::KeyPress::isKeyCurrentlyDown('a') || juce::KeyPress::isKeyCurrentlyDown('A') });
+			this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::KeyS,
+				.is_down = juce::KeyPress::isKeyCurrentlyDown('s') || juce::KeyPress::isKeyCurrentlyDown('S') });
+			this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::KeyD,
+				.is_down = juce::KeyPress::isKeyCurrentlyDown('d') || juce::KeyPress::isKeyCurrentlyDown('D') });
 
-			this->recordDiscreteInput(Input::InputBit::KeySpace, juce::KeyPress::isKeyCurrentlyDown(juce::KeyPress::spaceKey));
-			this->recordDiscreteInput(Input::InputBit::KeyEscape, juce::KeyPress::isKeyCurrentlyDown(juce::KeyPress::escapeKey));
-			this->recordDiscreteInput(Input::InputBit::KeyEnter, juce::KeyPress::isKeyCurrentlyDown(juce::KeyPress::returnKey));
+			this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::KeySpace,
+				.is_down = juce::KeyPress::isKeyCurrentlyDown(juce::KeyPress::spaceKey) });
+			this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::KeyEscape,
+				.is_down = juce::KeyPress::isKeyCurrentlyDown(juce::KeyPress::escapeKey) });
 
 			const auto modifiers = juce::ModifierKeys::getCurrentModifiers();
-			this->recordDiscreteInput(Input::InputBit::KeyShift, modifiers.isShiftDown());
-			this->recordDiscreteInput(Input::InputBit::KeyCtrl, modifiers.isCtrlDown());
-			this->recordDiscreteInput(Input::InputBit::KeyAlt, modifiers.isAltDown());
+
+			this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::KeyShift,
+				.is_down = modifiers.isShiftDown() });
+			this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::KeyCtrl,
+				.is_down = modifiers.isCtrlDown() });
+			this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::KeyAlt,
+				.is_down = modifiers.isAltDown() });
 
 			return true;
 		}
 		void mouseMove(const juce::MouseEvent& event) override
 		{
-			this->recordContinuousInput(Input::InputChannel::MouseX, static_cast<CRSTf32>(event.x));
-			this->recordContinuousInput(Input::InputChannel::MouseY, static_cast<CRSTf32>(event.y));
+			this->recordContinuousInput(
+				Input::ContinuousInputEvent{ .absolute_time_nano = 0 ,
+					.channel = Input::InputChannel::MouseX, .value = static_cast<CRSTf32>(event.x) });
+			this->recordContinuousInput(
+				Input::ContinuousInputEvent{ .absolute_time_nano = 0 ,
+					.channel = Input::InputChannel::MouseY, .value = static_cast<CRSTf32>(event.y) });
 		}
 		void mouseDrag(const juce::MouseEvent& event) override
 		{
@@ -145,18 +141,27 @@ namespace Crystal::Platform
 		}
 		void mouseDown(const juce::MouseEvent& event) override
 		{
-			if (event.mods.isLeftButtonDown())   this->recordDiscreteInput(Input::InputBit::MouseLeft, true);
-			if (event.mods.isRightButtonDown())  this->recordDiscreteInput(Input::InputBit::MouseRight, true);
-			if (event.mods.isMiddleButtonDown()) this->recordDiscreteInput(Input::InputBit::MouseMiddle, true);
+			if (event.mods.isLeftButtonDown())   
+				this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::MouseLeft,
+				.is_down = true });
+			if (event.mods.isRightButtonDown())
+				this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::MouseRight,
+				.is_down = true });
+			if (event.mods.isMiddleButtonDown())
+				this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::MouseMiddle,
+				.is_down = true });
 		}
 		void mouseUp(const juce::MouseEvent& event) override
 		{
-			if (!event.mods.isLeftButtonDown())   
-				this->recordDiscreteInput(Input::InputBit::MouseLeft, false);
-			if (!event.mods.isRightButtonDown())  
-				this->recordDiscreteInput(Input::InputBit::MouseRight, false);
-			if (!event.mods.isMiddleButtonDown()) 
-				this->recordDiscreteInput(Input::InputBit::MouseMiddle, false);
+			if (event.mods.isLeftButtonDown())
+				this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::MouseLeft,
+				.is_down = false });
+			if (event.mods.isRightButtonDown())
+				this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::MouseRight,
+				.is_down = false });
+			if (event.mods.isMiddleButtonDown())
+				this->recordDiscreteInput(Input::DiscreteInputEvent{ .absolute_time_nano = 0, .bit = Input::InputBit::MouseMiddle,
+				.is_down = false });
 		}
 	};
 	class CRST_Timer : public TimerBase
@@ -183,15 +188,27 @@ namespace Crystal::Platform
 			dispatch_event_callback = callback;
 			component->comp_dispatch_event_callback = dispatch_event_callback;
 		}
+		void linkInputAdapter(Input::InputBase* input_adapter) noexcept override
+		{
+			CRST_ASSERT(input_adapter != nullptr, "Initialise input_adapter first");
+
+			auto* juce_adapter = static_cast<CRST_InputAdapter*>(input_adapter);
+
+			component->addMouseListener(juce_adapter, true);
+			component->addKeyListener(juce_adapter);
+			component->setWantsKeyboardFocus(true);
+			component->grabKeyboardFocus();
+		}
 		void closeButtonPressed() override
 		{
 			std::cout << "[Platform] Requesting quit..." << std::endl;
 			Message::submitCommand<Message::ApplicationShutDown>();
-			if (!Framework::ApplicationBase::isRunning())
+			if (!ApplicationBase::isRunning())
 			{
 				juce::JUCEApplication::getInstance()->systemRequestedQuit();
 			}
-		}
+		}	  
+
 	private:
 		JUCE_Functionality* component;
 	};

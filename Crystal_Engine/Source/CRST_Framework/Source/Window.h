@@ -4,6 +4,9 @@
 #include <memory>
 #include <string_view>
 #include <CRST_Core/CRST_Core.h>
+
+#include "CRST_Input/Source/Input.h"
+
 namespace Crystal::Message
 {
 	struct EventBase;
@@ -29,6 +32,8 @@ namespace Crystal::Framework
 		CRST_NON_COPYABLE(WindowBase)
 		//==============================================================================
         virtual void routeEvent(const std::function<void(Message::EventBase&)>& callback) = 0;
+		virtual void linkInputAdapter(Input::InputBase* input_adapter) noexcept = 0;
+
 	protected:
 		WindowBase() = default;
     };

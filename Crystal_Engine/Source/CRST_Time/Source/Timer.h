@@ -7,10 +7,6 @@
 namespace Crystal::Time
 {
 	class Duration;
-	/**
-	 * @brief 硬件计时器
-	 * @details 唯一职责为从外部设备获取当前时间
-	 */
 	class TimerBase
 	{
 	public:
@@ -19,10 +15,6 @@ namespace Crystal::Time
 		virtual ~TimerBase() = default;
 		CRST_NON_COPYABLE(TimerBase)
 		//==============================================================================
-		/**
-		 * @brief 获取当前时间
-		 * @return 外部设备返回的当前 
-		 */
 		virtual CRSTu64 getAbsoluteTimeNano() noexcept = 0;
 		//==============================================================================
 	};

@@ -1,72 +1,135 @@
 //==============================================================================
 #pragma once
 #include <array>
+#include <bitset>
 #include <memory>
 #include <CRST_Core/CRST_Core.h>
 #include <CRST_Time/CRST_Time.h>
-#include "InputBuffer.h"
+
+#include "Input.h"
+
 //==============================================================================
 namespace Crystal::Input
 {
+	class LockFreeInputBuffer;
+	class InputBufferBase;
+
 	enum class InputChannel : CRSTu8
 	{
 		None = 0,
-		MouseX = 1,
-		MouseY = 2,
-		MouseMiddleUp = 3,
-		MouseMiddleDown = 4
+		MouseX,
+		MouseY,
+		MouseMiddleUp,
+		MouseMiddleDown
 	};
 	enum class InputBit : CRSTu8
 	{
-		MouseLeft = 0,
-		MouseRight = 1,
-		MouseMiddle = 2,
-		KeyShift = 3,
-		KeyCtrl = 4,
-		KeyAlt = 5,
-		KeyW = 6,
-		KeyA = 7,
-		KeyS = 8,
-		KeyD = 9,
-		KeySpace = 10,
-		KeyEscape = 11,
-		KeyEnter = 12,
-		Action0 = 15,
-		Action1 = 16
+		None = 0,
+		MouseLeft,
+		MouseRight,
+		MouseMiddle,
+		KeyShift,
+		KeyCtrl,
+		KeyAlt,
+		KeyW,
+		KeyA,
+		KeyS,
+		KeyD,
+		KeySpace,
+		KeyEscape,
+		KeyEnter,
+		Action0,
+		Action1
 	};
-	/**
-	 * @brief 纯值语义的输入状态快照
-	 * @note 满足内存对齐，便于后续向 AI 训练框架提取张量
-	 */
 	struct alignas(16) InputState
 	{
-		Time::TimePoint time_point;
-		std::array<CRSTf32, 16> continuous_inputs;
-		CRSTu64 discrete_inputs_h;
-		CRSTu64 discrete_inputs_l;
+		Time::TimePoint time_point = {};
+		std::array<CRSTf32, 16> continuous_inputs = {};
+		std::bitset<256> discrete_inputs = 0;
+	};
 
-		[[nodiscard]] CRSTbool isInputActive(InputBit bit) const noexcept
-		{
-			const CRSTu8 bit_pos = static_cast<CRSTu8>(bit);
-			if (bit_pos < 64) { return (discrete_inputs_l & (1ULL << bit_pos)) != 0; }
-			else { return (discrete_inputs_h & (1ULL << (bit_pos - 64))) != 0; }
-		}
-		void setInputBit(InputBit bit, CRSTbool active) noexcept
-		{
-			const CRSTu8 bit_pos = static_cast<CRSTu8>(bit);
-			const CRSTu64 mask = 1ULL << (bit_pos % 64);
+	struct ContinuousInputEvent
+	{
+		CRSTu64 absolute_time_nano;
 
-			if (bit_pos < 64)
-			{
-				if (active) discrete_inputs_l |= mask;
-				else discrete_inputs_l &= ~mask;
-			}
-			else
-			{
-				if (active) discrete_inputs_h |= mask;
-				else discrete_inputs_h &= ~mask;
-			}
+		InputChannel channel;
+		CRSTf32 value;
+	};
+
+	struct DiscreteInputEvent
+	{
+		CRSTu64 absolute_time_nano;
+
+		InputBit bit;
+		CRSTbool is_down;
+	};
+
+}
+namespace Crystal::Input
+{
+	class InputBufferBase
+	{
+	public:
+		explicit InputBufferBase(CRSTu64 capacity) : capacity(capacity) {}
+		virtual ~InputBufferBase() = default;
+		CRST_NON_COPYABLE(InputBufferBase)
+		//==============================================================================
+		virtual CRSTbool push(const DiscreteInputEvent& event) noexcept = 0;
+		virtual CRSTbool pop(DiscreteInputEvent& event) noexcept = 0;
+
+		const CRSTu64 capacity;
+	};
+	class LockFreeInputBuffer final : public InputBufferBase
+	{
+	public:
+		//==============================================================================
+		LockFreeInputBuffer(CRSTu64 capacity_)
+			: InputBufferBase(capacity_), mask(capacity_ - 1), discrete_buffer(std::make_unique<DiscreteInputEvent[]>(capacity_))
+		{
+			CRST_ASSERT(capacity_ > 0, "Capacity must be greater than 0");
+			CRST_ASSERT((capacity_ & (capacity_ - 1)) == 0, "Capacity must be a power of two");
 		}
+		~LockFreeInputBuffer() override = default;
+		//==============================================================================
+		CRSTbool push(const DiscreteInputEvent& event) noexcept override
+		{
+			const CRSTu64 current_push_count = push_count.load(std::memory_order_relaxed);
+			/* forbid write operation go upside */
+			const CRSTu64 current_pop_count = pop_count.load(std::memory_order_acquire);
+
+			if ((current_push_count - current_pop_count) >= capacity) return false;
+
+			/* write */
+			discrete_buffer[current_push_count & mask] = event;
+
+			/* forbid read operation go downside */
+			push_count.store(current_push_count + 1, std::memory_order_release);
+			return true;
+		}
+		CRSTbool pop(DiscreteInputEvent& event) noexcept override
+		{
+			const CRSTu64 current_pop_count = pop_count.load(std::memory_order_relaxed);
+			/* forbid read operation go upside */
+			const CRSTu64 current_push_count = push_count.load(std::memory_order_acquire);
+			if (current_push_count == current_pop_count) return false;
+
+			/* read */
+			event = discrete_buffer[current_pop_count & mask];
+
+			/* forbid read operation go downside */
+			pop_count.store(current_pop_count + 1, std::memory_order_release);
+			return true;
+		}
+
+	private:
+		//==============================================================================
+		const CRSTu64 mask;
+
+		std::unique_ptr<DiscreteInputEvent[]> discrete_buffer;
+
+		//==============================================================================
+		alignas(64) std::atomic<CRSTu64> push_count{ 0 };
+		alignas(64) std::atomic<CRSTu64> pop_count{ 0 };
 	};
 }
 namespace Crystal::Input
@@ -76,85 +139,69 @@ namespace Crystal::Input
 	public:
 		//==============================================================================
 		explicit InputBase(CRSTu64 capacity)
-			: shared_discrete(std::make_unique<LockFreeInputBuffer>(capacity)),
-			persistent_discrete_l(0), persistent_discrete_h(0)
+			: discrete_buffer(std::make_unique<LockFreeInputBuffer>(capacity))
 		{
 
 		}
 		virtual ~InputBase() = default;
 		CRST_NON_COPYABLE(InputBase)
 		//==============================================================================
-		void recordContinuousInput(InputChannel channel, CRSTf32 value) noexcept
+		void recordContinuousInput(const ContinuousInputEvent& event) noexcept
 		{
-			const CRSTu8 idx = static_cast<CRSTu8>(channel);
-			CRST_ASSERT(idx < 16, "Not a valid input channel");
-			shared_continuous[idx].store(value, std::memory_order_relaxed);
+			continuous_channels[static_cast<CRSTu8>(event.channel)].value.store(
+				event.value,std::memory_order_relaxed);
+			continuous_channels[static_cast<CRSTu8>(event.channel)].absolute_time_nano.store(
+				event.absolute_time_nano, std::memory_order_relaxed);
 		}
-		void recordDiscreteInput(InputBit bit, CRSTbool is_down) noexcept
+		void recordDiscreteInput(const DiscreteInputEvent& event) noexcept
 		{
-			const CRSTu8 bit_pos = static_cast<CRSTu8>(bit);
-			CRST_ASSERT(bit_pos < 128, "Not a valid input bit");
-
-			shared_discrete->push(InputEvent{ .bit = bit, .is_down = is_down });
+			discrete_buffer->push(event);
 		}
-		[[nodiscard]] InputState fetchInputState() noexcept
+		[[nodiscard]] InputState fetchInputState(const Time::TimePoint& current_frame_time) noexcept
 		{
-			InputState local_state{};
+			InputState snapshot;
+			snapshot.time_point = current_frame_time;
 
-			for (CRSTu16 i = 0; i < 16; ++i)
+			CRSTu64 max_hardware_nano = 0;
+			DiscreteInputEvent discrete_event;
+			while (discrete_buffer->pop(discrete_event))
 			{
-				local_state.continuous_inputs[i] = shared_continuous[i].load(std::memory_order_relaxed);
-			}
+				const CRSTu8 bit_pos = static_cast<CRSTu8>(discrete_event.bit);
 
-			local_state.discrete_inputs_l = persistent_discrete_l;
-			local_state.discrete_inputs_h = persistent_discrete_h;
-
-			InputEvent event;
-			while (shared_discrete->pop(event))
-			{
-				const CRSTu8 bit_pos = static_cast<CRSTu8>(event.bit);
-				const CRSTu64 mask = 1ULL << (bit_pos % 64);
-
-				if (bit_pos < 64)
+				snapshot.discrete_inputs.set(bit_pos, discrete_event.is_down);
+				if (discrete_event.absolute_time_nano > max_hardware_nano)
 				{
-					if (event.is_down)
-					{
-						local_state.discrete_inputs_l |= mask;
-					}
-					else
-					{
-						local_state.discrete_inputs_l &= ~mask;
-					}
-				}
-				else
-				{
-					if (event.is_down)
-					{
-						local_state.discrete_inputs_h |= mask;
-					}
-					else
-					{
-						local_state.discrete_inputs_h &= ~mask;
-					}
+					max_hardware_nano = discrete_event.absolute_time_nano;
 				}
 			}
 
-			persistent_discrete_l = local_state.discrete_inputs_l;
-			persistent_discrete_h = local_state.discrete_inputs_h;
+			for (size_t i = 1; i < 16; ++i) [[likely]]
+			{
+				auto val = continuous_channels[i].value.load(std::memory_order_relaxed);
+				auto nano = continuous_channels[i].absolute_time_nano.load(std::memory_order_relaxed);
 
-			return local_state;
+				snapshot.continuous_inputs[i] = val;
+
+				if (nano > max_hardware_nano) max_hardware_nano = nano;
+			}
+			return snapshot;
 		}
+
 
 	protected:
 		//==============================================================================
-		alignas(64) std::array<std::atomic<CRSTf32>, 16> shared_continuous{};
-		std::unique_ptr<InputBufferBase> shared_discrete = nullptr;
-		//==============================================================================
-		CRSTu64 persistent_discrete_l;
-		CRSTu64 persistent_discrete_h;
+		struct alignas(64) ContinuousChannel
+		{
+			std::atomic<CRSTf32> value{ 0.0f };
+			std::atomic<CRSTu64> absolute_time_nano{ 0 };
+		};
+
+		std::array<ContinuousChannel, 16> continuous_channels;
+		std::unique_ptr<InputBufferBase>  discrete_buffer;
 	};
 }
 namespace Crystal::Input
 {
 	std::unique_ptr<InputBase> createInputAdapter(CRSTu64 capacity);
 }
+

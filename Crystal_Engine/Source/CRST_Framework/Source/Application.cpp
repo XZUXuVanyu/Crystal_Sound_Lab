@@ -28,36 +28,26 @@ void ApplicationBase::initialise(const ApplicationContext& context) noexcept
 void ApplicationBase::engineLoop()
 {
 	CRST_ASSERT(engine_clock != nullptr, "Initialise error");
-	TelemetryController telemetry(10000000);
 
-	TimePoint last_frame_time = engine_clock->getCurrentTimePoint();
-	uint64_t last_raw_nano = engine_clock->getRawTimeNano();
-
+	TimePoint frame_time_point;
+	Duration frame_time;
+	InputState frame_input;
+	
 	while (is_running.load(std::memory_order_relaxed))
 	{
 		engine_clock->advanceTime();
-		
-		TimePoint current_frame_time = engine_clock->getCurrentTimePoint();
-		uint64_t current_raw_nano = engine_clock->getRawTimeNano();
-
-		execute_linear_workload(400);
 
 		while (engine_clock->canUpdateMajorFrame())
 		{
+			frame_time_point = engine_clock->getCurrentTimePoint();
+			frame_input = engine_input->fetchInputState(frame_time_point);
+
+			for (auto& layer_it : layers) (*layer_it).onTimeAdvance(frame_time, frame_input);	
+
 			engine_clock->consumeMajorFrame();
 		}
 
 		engine_clock->consumeSubFrame();
-
-		uint64_t real_hardware_dt = current_raw_nano - last_raw_nano;
-		Duration framework_dt = current_frame_time - last_frame_time;
-
-		uint64_t delta_accumulator = engine_clock->getAccumulatorNano();
-
-		telemetry.pushRecord(real_hardware_dt, delta_accumulator, framework_dt.bits);
-
-		last_frame_time = current_frame_time;
-		last_raw_nano = current_raw_nano;
 
 		//std::this_thread::yield();
 	}
@@ -66,11 +56,12 @@ void ApplicationBase::quit()
 {
 	is_running = false;
 }
-void ApplicationBase::onTimeAdvance(CRSTf64 dt) noexcept
+void ApplicationBase::onTimeAdvance(const Time::Duration duration,
+	const Input::InputState& input) noexcept
 {
 	flushCommands();
 	pollEvents();
-	onTimeAdvanceImpl(dt);
+	onTimeAdvanceImpl(duration,input);
 }
 void ApplicationBase::onCommand(CommandBase& cmd) noexcept
 {
@@ -160,6 +151,7 @@ void WindowedApplicationBase::initialiseImpl(const ApplicationContext& context) 
 	std::cout << "[Engine] engine_clock initialised" << std::endl;
 
 	window = createWindow();
+	window->linkInputAdapter(engine_input.get());
 	window->routeEvent(CRST_BIND_CALLBACK(onEvent));
 	std::cout << "[Engine] engine_window initialised" << std::endl;
 
@@ -171,14 +163,14 @@ void WindowedApplicationBase::initialiseImpl(const ApplicationContext& context) 
 
 	std::cout << "[Engine] Engine loop started" << std::endl;
 }
-void WindowedApplicationBase::onTimeAdvanceImpl(CRSTf64 dt) noexcept
+void WindowedApplicationBase::onTimeAdvanceImpl(const Time::Duration duration, const Input::InputState& input) noexcept
 {
 	for (auto layer_it = layers.begin(); layer_it != layers.end(); ++layer_it)
 	{
 		CRST_ASSERT((*layer_it) != nullptr, "Null layer pointer detected inside active layer stack");
-		(*layer_it)->onTimeAdvance(dt);
+		(*layer_it)->onTimeAdvance(duration, input);
 	}
-	userTimeAdvance(dt);
+	userTimeAdvance(duration, input);
 }
 void WindowedApplicationBase::onCommandImpl(CommandBase& cmd) noexcept
 {

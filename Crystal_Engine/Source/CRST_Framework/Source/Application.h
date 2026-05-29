@@ -18,71 +18,6 @@ namespace Crystal::Message
 	struct CommandMapper;
 }
 //==============================================================================
-
-inline volatile uint64_t g_telemetry_workload_sink = 0;
-inline void execute_linear_workload(uint64_t iterations) noexcept
-{
-	uint64_t x = 0x123456789ULL;
-	for (uint64_t i = 0; i < iterations; ++i)
-	{
-		x = (x * 6364136223846793005ULL) + 1442695040888963407ULL;
-	}
-	g_telemetry_workload_sink = x;
-}
-
-struct TelemetryRecord {
-	uint64_t raw_dt;
-	uint64_t delta_accumulator;
-	uint64_t duration_ticks;
-};
-class TelemetryController 
-{
-public:
-	explicit TelemetryController(size_t max_samples = 10000000)
-		: max_samples_count(max_samples)
-	{
-		records.reserve(max_samples_count);
-	}
-
-	inline void pushRecord(uint64_t raw_dt, uint64_t delta_acc, uint64_t ticks) noexcept {
-		if (!is_full) [[likely]] {
-			records.push_back({ raw_dt, delta_acc, ticks });
-			if (records.size() >= max_samples_count) {
-				is_full = true;
-				dumpToCSV("engine_time_telemetry.csv");
-			}
-		}
-	}
-
-	[[nodiscard]] bool isFull() const noexcept { return is_full; }
-
-private:
-	void dumpToCSV(const std::string& filename) {
-		std::cout << "[Telemetry]"  << max_samples_count << "data points collected. Writing to " << filename << "..." << std::endl;
-		std::ofstream file(filename, std::ios::out | std::ios::trunc);
-		if (!file.is_open()) {
-			std::cerr << "[Telemetry] Failed to open file for writing!" << std::endl;
-			return;
-		}
-
-		file << "Raw_DT_Nano,Delta_Accumulator,Duration_Ticks\n";
-
-		// 批量写入
-		for (const auto& record : records) {
-			file << record.raw_dt << ","
-				<< record.delta_accumulator << ","
-				<< record.duration_ticks << "\n";
-		}
-
-		file.close();
-		std::cout << "[Telemetry] Data dumped successfully. Collection stopped." << std::endl;
-	}
-
-	std::vector<TelemetryRecord> records;
-	const size_t                max_samples_count;
-	bool                        is_full = false;
-};
-
 namespace Crystal::Framework
 {
 	enum class ApplicationType : CRSTu8
@@ -117,7 +52,8 @@ namespace Crystal::Framework
 		void			engineLoop();
 		void			quit();
 		//==============================================================================
-		void			onTimeAdvance(CRSTf64 dt) noexcept;
+		void			onTimeAdvance(const Time::Duration duration, 
+			const Input::InputState& input) noexcept;
 		void			onCommand(Message::CommandBase& cmd) noexcept;
 		void			onEvent(Message::EventBase& e) noexcept;
 		//==============================================================================
@@ -132,7 +68,8 @@ namespace Crystal::Framework
 	protected:
 		//==============================================================================
 		virtual void	initialiseImpl(const ApplicationContext& context) noexcept = 0;
-		virtual void	onTimeAdvanceImpl(CRSTf64 dt) noexcept = 0;
+		virtual void	onTimeAdvanceImpl(const Time::Duration duration, 
+			const Input::InputState& input) noexcept = 0;
 		virtual void	onCommandImpl(Message::CommandBase& cmd) noexcept = 0;
 		virtual void	onEventImpl(Message::EventBase& e) noexcept = 0;
 	protected:
@@ -157,7 +94,7 @@ namespace Crystal::Framework
 		//==============================================================================
 		WindowedApplicationBase() = default;
 		virtual void userInitialise() = 0;
-		virtual void userTimeAdvance(CRSTf64 dt) = 0;
+		virtual void userTimeAdvance(const Time::Duration duration, const Input::InputState& input) = 0;
 		virtual void userCommandProcess(Message::CommandBase& cmd) = 0;
 		virtual void userEventProcess(Message::EventBase& e) = 0;
 	protected:
@@ -165,7 +102,8 @@ namespace Crystal::Framework
 		std::unique_ptr<WindowBase>	window;
 	private:
 		void        initialiseImpl(const ApplicationContext& context) noexcept override;
-		void        onTimeAdvanceImpl(CRSTf64 dt) noexcept final;
+		void        onTimeAdvanceImpl(const Time::Duration duration, 
+			const Input::InputState& input) noexcept final;
 		void		onCommandImpl(Message::CommandBase& cmd) noexcept final;
 		void        onEventImpl(Message::EventBase& e) noexcept final;
 	};
@@ -175,6 +113,4 @@ namespace Crystal::Framework
 {
 	std::unique_ptr<ApplicationBase> createApplication();
 }
-
-
 //==============================================================================
