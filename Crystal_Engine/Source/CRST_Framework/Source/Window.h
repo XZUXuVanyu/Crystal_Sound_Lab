@@ -20,20 +20,20 @@ namespace Crystal::Framework
 }
 namespace Crystal::Framework
 {
-	class MinimumWindowBase
+	class WindowBase
     {
     public:
         using is_crst_window = void;
 		//==============================================================================
-		MinimumWindowBase(const MinimumWindowBase&) = delete;
-		MinimumWindowBase& operator=(const MinimumWindowBase&) = delete;
-		virtual ~MinimumWindowBase() = default;
+		virtual ~WindowBase() = default;
+		CRST_NON_COPYABLE(WindowBase)
 		//==============================================================================
         virtual void routeEvent(const std::function<void(Message::EventBase&)>& callback) = 0;
 	protected:
-		MinimumWindowBase() = default;
+		WindowBase() = default;
     };
-	class ApplicationWindowBase : public MinimumWindowBase
+
+	class ApplicationWindowBase : public WindowBase
 	{
 	public:
 		ApplicationWindowBase() = default;
@@ -49,6 +49,6 @@ namespace Crystal::Framework
 }
 namespace Crystal::Framework
 {
-	std::unique_ptr<MinimumWindowBase> createWindow();
+	std::unique_ptr<WindowBase> createWindow();
 }
 //==============================================================================

@@ -9,37 +9,13 @@ namespace Crystal::Message
 	{
 		CommandMapper() noexcept
 		{
-			command_table[static_cast<CRSTu8>(CommandType::TimerStart)] = &CommandMapper::handleTimerStart;
-			command_table[static_cast<CRSTu8>(CommandType::TimerPause)]= &CommandMapper::handleTimerPause;
-			command_table[static_cast<CRSTu8>(CommandType::TimerStop)]= &CommandMapper::handleTimerStop;
 			command_table[static_cast<CRSTu8>(CommandType::LayerPush)] = &CommandMapper::handleLayerPush;
 			command_table[static_cast<CRSTu8>(CommandType::LayerDelete)] = &CommandMapper::handleLayerDelete;
 			command_table[static_cast<CRSTu8>(CommandType::LayerSwap)] = &CommandMapper::handleLayerSwap;
 			command_table[static_cast<CRSTu8>(CommandType::ApplicationShutDown)] = &CommandMapper::handleApplicationShutDown;
 			command_table[static_cast<CRSTu8>(CommandType::UserDefined)] = &CommandMapper::handleUserDefinedCommands;
 		}
-		static void handleTimerStart(CommandBase& cmd, Framework::MinimumApplicationBase* instance)
-		{
-			CRST_ASSERT(instance != nullptr, "Application instance runtime pointer is collapsed");
-			auto* app = static_cast<Framework::WindowedApplicationBase*>(instance);
-			app->timer->start(CRST_BIND_CALLBACK_WITH_INSTANCE(onTimeAdvance, app));
-			cmd.handled = true;
-		}
-		static void handleTimerPause(CommandBase& cmd, Framework::MinimumApplicationBase* instance)
-		{
-			CRST_ASSERT(instance != nullptr, "Application instance runtime pointer is collapsed");
-			auto* app = static_cast<Framework::WindowedApplicationBase*>(instance);
-			app->timer->pause();
-			cmd.handled = true;
-		}
-		static void handleTimerStop(CommandBase& cmd, Framework::MinimumApplicationBase* instance)
-		{
-			CRST_ASSERT(instance != nullptr, "Application instance runtime pointer is collapsed");
-			auto* app = static_cast<Framework::WindowedApplicationBase*>(instance);
-			app->timer->stop();
-			cmd.handled = true;
-		}
-		static void handleLayerPush(CommandBase& cmd, Framework::MinimumApplicationBase* instance)
+		static void handleLayerPush(CommandBase& cmd, Framework::ApplicationBase* instance)
 		{
 			CRST_ASSERT(instance != nullptr, "Application instance runtime pointer is collapsed");
 			auto* app = static_cast<Framework::WindowedApplicationBase*>(instance);
@@ -61,7 +37,7 @@ namespace Crystal::Message
 
 			cmd.handled = true;
 		}
-		static void handleLayerDelete(CommandBase& cmd, Framework::MinimumApplicationBase* instance)
+		static void handleLayerDelete(CommandBase& cmd, Framework::ApplicationBase* instance)
 		{
 			CRST_ASSERT(instance != nullptr, "Application instance runtime pointer is collapsed");
 			auto* app = static_cast<Framework::WindowedApplicationBase*>(instance);
@@ -83,7 +59,7 @@ namespace Crystal::Message
 
 			cmd.handled = true;
 		}
-		static void handleLayerSwap(CommandBase& cmd, Framework::MinimumApplicationBase* instance)
+		static void handleLayerSwap(CommandBase& cmd, Framework::ApplicationBase* instance)
 		{
 			CRST_ASSERT(instance != nullptr, "Application instance runtime pointer is collapsed");
 			auto* app = static_cast<Framework::WindowedApplicationBase*>(instance);
@@ -107,7 +83,7 @@ namespace Crystal::Message
 
 			cmd.handled = true;
 		}
-		static void handleApplicationShutDown(CommandBase& cmd, Framework::MinimumApplicationBase* instance)
+		static void handleApplicationShutDown(CommandBase& cmd, Framework::ApplicationBase* instance)
 		{
 			CRST_ASSERT(instance != nullptr, "Application instance runtime pointer is collapsed");
 			auto* app = static_cast<Framework::WindowedApplicationBase*>(instance);
@@ -115,7 +91,7 @@ namespace Crystal::Message
 
 			cmd.handled = true;
 		}
-		static void handleUserDefinedCommands(CommandBase& cmd, Framework::MinimumApplicationBase* instance)
+		static void handleUserDefinedCommands(CommandBase& cmd, Framework::ApplicationBase* instance)
 		{
 			CRST_ASSERT(cmd.getType() == CommandType::UserDefined, "Command routing mismatch");
 			auto& user_cmds = static_cast<UserDefinedCommands&>(cmd);

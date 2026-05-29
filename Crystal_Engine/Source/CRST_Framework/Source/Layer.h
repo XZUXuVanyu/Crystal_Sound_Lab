@@ -23,10 +23,7 @@ namespace Crystal::Framework
             CRST_ASSERT(!this->name.empty(), "Do not create layer with null name");
         }
         virtual ~LayerBase() = default;
-        LayerBase(const LayerBase&) = delete;
-        LayerBase& operator=(const LayerBase&) = delete;
-        LayerBase(LayerBase&&) noexcept = default;
-        LayerBase& operator=(LayerBase&&) noexcept = default;
+        CRST_NON_COPYABLE(LayerBase)
         //==============================================================================
         virtual void onAttach() = 0;
         virtual void onDetach() = 0;

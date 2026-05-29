@@ -14,11 +14,11 @@ namespace Crystal::Message
 	//==============================================================================
 	inline void submitCommand(std::unique_ptr<CommandBase> cmd) noexcept
 	{
-		Framework::MinimumApplicationBase::queueCommand(std::move(cmd));
+		Framework::ApplicationBase::queueCommand(std::move(cmd));
 	}
 	inline void raiseEvent(std::unique_ptr<EventBase> e) noexcept
 	{
-		Framework::MinimumApplicationBase::queueEvent(std::move(e));
+		Framework::ApplicationBase::queueEvent(std::move(e));
 	}
 	//==============================================================================
 	template <isCRSTCommand CommandType_T, typename... ArgsType_T_List>

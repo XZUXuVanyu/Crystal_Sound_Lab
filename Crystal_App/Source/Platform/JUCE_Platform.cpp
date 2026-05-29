@@ -8,8 +8,11 @@
 #include <CRST_Core/CRST_Core.h>
 #include <CRST_Framework/CRST_Framework.h>
 #include <CRST_Message/CRST_Message.h>
+#include <CRST_Time/CRST_Time.h>
 //==============================================================================
 using namespace Crystal;
+using namespace Crystal::Framework;
+using namespace Crystal::Time;
 namespace Crystal::Platform
 {
 	class OutputStreamBuf : public std::streambuf
@@ -99,48 +102,72 @@ namespace Crystal::Platform
 }
 namespace Crystal::Platform
 {
-	class CRST_Timer : public juce::Timer, public Framework::FixedTimeStepBase
+	class CRST_InputAdapter : public Input::InputBase,
+		public juce::KeyListener, public juce::MouseListener
 	{
 	public:
-		CRST_Timer(CRSTf64 time_step) : FixedTimeStepBase(time_step)
+		//==============================================================================
+		explicit CRST_InputAdapter(CRSTu64 capacity = 256)
+			: InputBase(capacity){}
+		~CRST_InputAdapter() override = default;
+		CRST_NON_COPYABLE(CRST_InputAdapter)
+		//==============================================================================
+		bool keyPressed(const juce::KeyPress&, juce::Component*) override
 		{
+			return false;
+		}
+		bool keyStateChanged(bool isKeyDown, juce::Component*) override
+		{
+			this->recordDiscreteInput(Input::InputBit::KeyW, juce::KeyPress::isKeyCurrentlyDown('w') || juce::KeyPress::isKeyCurrentlyDown('W'));
+			this->recordDiscreteInput(Input::InputBit::KeyA, juce::KeyPress::isKeyCurrentlyDown('a') || juce::KeyPress::isKeyCurrentlyDown('A'));
+			this->recordDiscreteInput(Input::InputBit::KeyS, juce::KeyPress::isKeyCurrentlyDown('s') || juce::KeyPress::isKeyCurrentlyDown('S'));
+			this->recordDiscreteInput(Input::InputBit::KeyD, juce::KeyPress::isKeyCurrentlyDown('d') || juce::KeyPress::isKeyCurrentlyDown('D'));
 
-		}
-		void timerCallback() override
-		{
-			auto now = std::chrono::high_resolution_clock::now();
-			std::chrono::duration<CRSTf64> elapsed = now - last_hardware_time;
-			last_hardware_time = now;
-			FixedTimeStepBase::onTimeAdvance(elapsed.count());
-			// notify_time_advance_callback(time_step) -> ApplicationBase::onTimeAdvance(time_step)
-		}
-		void start(const std::function<void(CRSTf64)>& callback) override
-		{
-			// ApplicationBase::onTimeAdvance -> notify_time_advance_callback
-			notify_time_advance_callback = callback;
-			last_hardware_time = std::chrono::high_resolution_clock::now();
+			this->recordDiscreteInput(Input::InputBit::KeySpace, juce::KeyPress::isKeyCurrentlyDown(juce::KeyPress::spaceKey));
+			this->recordDiscreteInput(Input::InputBit::KeyEscape, juce::KeyPress::isKeyCurrentlyDown(juce::KeyPress::escapeKey));
+			this->recordDiscreteInput(Input::InputBit::KeyEnter, juce::KeyPress::isKeyCurrentlyDown(juce::KeyPress::returnKey));
 
-			int interval_ms = static_cast<int>(time_step * 1000.0);
-			if (interval_ms < 1) interval_ms = 1;
+			const auto modifiers = juce::ModifierKeys::getCurrentModifiers();
+			this->recordDiscreteInput(Input::InputBit::KeyShift, modifiers.isShiftDown());
+			this->recordDiscreteInput(Input::InputBit::KeyCtrl, modifiers.isCtrlDown());
+			this->recordDiscreteInput(Input::InputBit::KeyAlt, modifiers.isAltDown());
 
-			startTimer(interval_ms);
+			return true;
 		}
-		void pause() override
+		void mouseMove(const juce::MouseEvent& event) override
 		{
-			stopTimer();
+			this->recordContinuousInput(Input::InputChannel::MouseX, static_cast<CRSTf32>(event.x));
+			this->recordContinuousInput(Input::InputChannel::MouseY, static_cast<CRSTf32>(event.y));
 		}
-		void stop() override
+		void mouseDrag(const juce::MouseEvent& event) override
 		{
-			stopTimer();
-
-			accumulator = 0.0;
-			delta_time = 0.0;
-			total_time = 0.0;
+			mouseMove(event);
 		}
-	private:
-		std::chrono::time_point<std::chrono::high_resolution_clock> last_hardware_time;
+		void mouseDown(const juce::MouseEvent& event) override
+		{
+			if (event.mods.isLeftButtonDown())   this->recordDiscreteInput(Input::InputBit::MouseLeft, true);
+			if (event.mods.isRightButtonDown())  this->recordDiscreteInput(Input::InputBit::MouseRight, true);
+			if (event.mods.isMiddleButtonDown()) this->recordDiscreteInput(Input::InputBit::MouseMiddle, true);
+		}
+		void mouseUp(const juce::MouseEvent& event) override
+		{
+			if (!event.mods.isLeftButtonDown())   
+				this->recordDiscreteInput(Input::InputBit::MouseLeft, false);
+			if (!event.mods.isRightButtonDown())  
+				this->recordDiscreteInput(Input::InputBit::MouseRight, false);
+			if (!event.mods.isMiddleButtonDown()) 
+				this->recordDiscreteInput(Input::InputBit::MouseMiddle, false);
+		}
 	};
-	class CRST_Window : public Framework::ApplicationWindowBase, public juce::DocumentWindow
+	class CRST_Timer : public TimerBase
+	{
+	public:
+		CRSTu64 getAbsoluteTimeNano() noexcept override
+		{
+			return static_cast<CRSTu64>(juce::Time::getHighResolutionTicks()) * 100ULL;
+		}
+	};
+	class CRST_Window : public ApplicationWindowBase, public juce::DocumentWindow
 	{
 	public:
 		CRST_Window() : DocumentWindow("JUCE Window", juce::Colours::black, allButtons)
@@ -160,7 +187,7 @@ namespace Crystal::Platform
 		{
 			std::cout << "[Platform] Requesting quit..." << std::endl;
 			Message::submitCommand<Message::ApplicationShutDown>();
-			if (!Framework::MinimumApplicationBase::isRunning())
+			if (!Framework::ApplicationBase::isRunning())
 			{
 				juce::JUCEApplication::getInstance()->systemRequestedQuit();
 			}
@@ -171,15 +198,30 @@ namespace Crystal::Platform
 }
 namespace Crystal::Framework
 {
-	std::unique_ptr<MinimumWindowBase> createWindow()
+	std::unique_ptr<WindowBase> createWindow()
 	{
 		return std::make_unique<Platform::CRST_Window>();
 	}
-	std::unique_ptr<MinimumTimerBase> createTimer(CRSTf64 time_step)
+}
+namespace Crystal::Time
+{
+	std::unique_ptr<TimerBase> createTimer()
 	{
-		return std::make_unique<Platform::CRST_Timer>(time_step);
+		return std::make_unique<Platform::CRST_Timer>();
+	}
+	std::unique_ptr<ClockBase> createClock(CRSTf64 time_step)
+	{
+		return std::make_unique<ClockBase>(time_step, createTimer());
 	}
 }
+namespace Crystal::Input
+{
+	std::unique_ptr<InputBase> createInputAdapter(CRSTu64 capacity)
+	{
+		return std::make_unique<Platform::CRST_InputAdapter>(capacity);
+	}
+}
+
 class JUCE_Entry : public juce::JUCEApplication
 {
 public:
@@ -191,10 +233,10 @@ public:
 	{
 		redirector = std::make_unique<Crystal::Platform::OutputRedirector>();
 
-		main_app = Framework::createApplication();
-		main_app->initialise(Framework::ApplicationContext{
+		main_app = createApplication();
+		main_app->initialise(ApplicationContext{
 		.name = "Sandbox" , .version = "0.0.1", .type = Framework::ApplicationType::Windowed,
-			.time_step = 0.01 });
+			.time_step = 0.01, .input_buffer_capacity = 256 });
 	}
 	void shutdown() override
 	{
@@ -206,7 +248,7 @@ public:
 	//==============================================================================
 private:
 	//==============================================================================
-	std::unique_ptr<Framework::MinimumApplicationBase> main_app;
+	std::unique_ptr<Framework::ApplicationBase> main_app;
 	std::unique_ptr<Platform::OutputRedirector> redirector;
 	//==============================================================================
 };

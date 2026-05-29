@@ -116,7 +116,7 @@ namespace Crystal::Message
 }
 namespace Crystal::Message
 {
-	using CommandHandler = void(*)(CommandBase&, Framework::MinimumApplicationBase*);
+	using CommandHandler = void(*)(CommandBase&, Framework::ApplicationBase*);
 	inline std::array<CommandHandler, static_cast<CRSTu8>(CommandType::Count)> command_table = { nullptr };
 	void initialiseCommandMap() noexcept;
 }

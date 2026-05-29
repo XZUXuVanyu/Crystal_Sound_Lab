@@ -49,7 +49,7 @@ namespace Crystal::Client
 }
 namespace Crystal::Framework
 {
-    std::unique_ptr<MinimumApplicationBase> createApplication()
+    std::unique_ptr<ApplicationBase> createApplication()
     {
         return std::make_unique<Client::Sandbox>();
     }
