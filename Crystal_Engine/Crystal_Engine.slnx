@@ -1,9 +1,0 @@
-<Solution>
-  <Configurations>
-    <Platform Name="x64" />
-    <Platform Name="x86" />
-  </Configurations>
-  <Project Path="Crystal_Engine.vcxproj" Id="e2f04e33-d497-4e50-b6b3-632689391e01">
-    <Build Solution="*|x86" Project="false" />
-  </Project>
-</Solution>
